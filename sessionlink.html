@@ -40,11 +40,14 @@
   .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #D4A800; color: #111; }
   .btn:hover { background: #e8b800; }
   .btn:disabled { background: #2a2a2a; color: #444; cursor: default; }
-  .confirm { background: #0f2a1a; border: 0.5px solid #1a5a30; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; align-items: center; gap: 10px; }
-  .confirm-icon { font-size: 20px; }
-  .confirm-text { font-size: 13px; color: #4ade80; line-height: 1.4; }
-  .error { background: #2a0f0f; border: 0.5px solid #5a1a1a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; font-size: 13px; color: #f87171; }
-  .loading { text-align: center; padding: 20px; font-size: 13px; color: #555; }
+  .confirm { background: #0f2a1a; border: 0.5px solid #1a5a30; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; align-items: flex-start; gap: 10px; }
+  .confirm-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .confirm-text { font-size: 13px; color: #4ade80; line-height: 1.5; }
+  .error-msg { background: #2a0f0f; border: 0.5px solid #5a1a1a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; font-size: 13px; color: #f87171; }
+  .sending-bar { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; align-items: center; gap: 12px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid #333; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .sending-text { font-size: 13px; color: #666; }
   .footer { text-align: center; margin-top: 16px; font-size: 11px; color: #333; }
 </style>
 </head>
@@ -52,7 +55,7 @@
 <div class="widget">
   <div class="header">
     <div>
-      <div class="logo">SessionLink</div>
+      <div class="logo">BayBuddy</div>
       <div class="tagline">Play better together</div>
     </div>
     <div class="live-badge">● Live</div>
@@ -60,22 +63,10 @@
   <div class="body">
     <div class="section-label">Your session</div>
     <div class="session-card">
-      <div>
-        <div class="field-label">Bay</div>
-        <div class="field-value gold">Empire Bay</div>
-      </div>
-      <div>
-        <div class="field-label">Member</div>
-        <div class="field-value">Mike</div>
-      </div>
-      <div>
-        <div class="field-label">Date</div>
-        <div class="field-value" id="session-date"></div>
-      </div>
-      <div>
-        <div class="field-label">Time</div>
-        <div class="field-value">4:00 – 5:30 PM</div>
-      </div>
+      <div><div class="field-label">Bay</div><div class="field-value gold">Empire Bay</div></div>
+      <div><div class="field-label">Member</div><div class="field-value">Mike</div></div>
+      <div><div class="field-label">Date</div><div class="field-value" id="session-date"></div></div>
+      <div><div class="field-label">Time</div><div class="field-value">4:00 – 5:30 PM</div></div>
     </div>
 
     <div class="section-label">Session type</div>
@@ -89,7 +80,12 @@
 
     <div class="invite-panel" id="invite-panel">
       <div class="invite-hint">Select members to invite</div>
-      <div id="member-list"><div class="loading">Loading members...</div></div>
+      <div id="member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading members...</div></div>
+    </div>
+
+    <div class="sending-bar" id="sending-bar">
+      <div class="spinner"></div>
+      <div class="sending-text" id="sending-text">Sending invites...</div>
     </div>
 
     <div class="confirm" id="confirm">
@@ -97,10 +93,10 @@
       <div class="confirm-text" id="confirm-text"></div>
     </div>
 
-    <div class="error" id="error-msg"></div>
+    <div class="error-msg" id="error-msg"></div>
 
     <button class="btn" id="main-btn" onclick="handleSubmit()">Confirm booking</button>
-    <div class="footer">Powered by SessionLink</div>
+    <div class="footer">Powered by BayBuddy</div>
   </div>
 </div>
 
@@ -108,6 +104,9 @@
   const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
   const FACILITY_ID = '00000000-0000-0000-0000-000000000001';
+  const FACILITY_NAME = 'New York Golf & Fitness';
+  const HOST_NAME = 'Mike';
+  const BAY_NAME = 'Empire Bay';
 
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -118,55 +117,42 @@
 
   const d = new Date();
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   document.getElementById('session-date').textContent = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 
+  function formatTime(t) {
+    const [h,m] = t.split(':');
+    const hr = parseInt(h);
+    return (hr % 12 || 12) + ':' + m + ' ' + (hr >= 12 ? 'PM' : 'AM');
+  }
+
   async function loadMembers() {
-    const { data, error } = await db
-      .from('members')
-      .select('*')
-      .eq('facility_id', FACILITY_ID)
-      .neq('name', 'Mike');
-
-    if (error) {
-      document.getElementById('member-list').innerHTML = '<div class="loading" style="color:#f87171">Failed to load members</div>';
-      return;
-    }
-
+    const { data, error } = await db.from('members').select('*').eq('facility_id', FACILITY_ID).neq('name', HOST_NAME);
+    if (error) { document.getElementById('member-list').innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load members</div>'; return; }
     members = data;
     const list = document.getElementById('member-list');
-    if (!members.length) {
-      list.innerHTML = '<div class="loading">No members found</div>';
-      return;
-    }
-
+    if (!members.length) { list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
     list.innerHTML = members.map(m => {
-      const initials = m.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
-      return `
-        <div class="member-row" onclick="toggleMember('${m.id}')">
-          <div class="avatar" id="av-${m.id}">${initials}</div>
-          <div class="member-info">
-            <div class="member-name">${m.name}</div>
-            <div class="member-hcp">${m.handicap != null ? 'Handicap: ' + m.handicap : 'Member'}</div>
-          </div>
-          <div class="checkbox" id="cb-${m.id}"></div>
-        </div>`;
+      const initials = m.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      return `<div class="member-row" onclick="toggleMember('${m.id}')">
+        <div class="avatar" id="av-${m.id}">${initials}</div>
+        <div class="member-info">
+          <div class="member-name">${m.name}</div>
+          <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
+        </div>
+        <div class="checkbox" id="cb-${m.id}"></div>
+      </div>`;
     }).join('');
   }
 
   function toggleMember(id) {
     if (submitted) return;
     selected[id] = !selected[id];
-    const cb = document.getElementById('cb-' + id);
-    const av = document.getElementById('av-' + id);
-    if (selected[id]) {
-      cb.className = 'checkbox checked';
-      cb.textContent = '✓';
-      av.className = 'avatar selected';
-    } else {
-      cb.className = 'checkbox';
-      cb.textContent = '';
-      av.className = 'avatar';
-    }
+    const cb = document.getElementById('cb-'+id);
+    const av = document.getElementById('av-'+id);
+    cb.className = 'checkbox' + (selected[id] ? ' checked' : '');
+    cb.textContent = selected[id] ? '✓' : '';
+    av.className = 'avatar' + (selected[id] ? ' selected' : '');
     updateBtn();
   }
 
@@ -191,58 +177,66 @@
     submitted = true;
     const btn = document.getElementById('main-btn');
     btn.disabled = true;
-    btn.textContent = 'Saving...';
 
     const today = new Date().toISOString().split('T')[0];
+    const dateLabel = days[new Date().getDay()] + ', ' + months[new Date().getMonth()] + ' ' + new Date().getDate();
 
-    const { data: sessionData, error: sessionError } = await db
-      .from('sessions')
-      .insert({
-        facility_id: FACILITY_ID,
-        host_member_id: null,
-        bay_name: 'Empire Bay',
-        session_date: today,
-        start_time: '16:00:00',
-        end_time: '17:30:00',
-        is_open: isOpen
-      })
-      .select()
-      .single();
+    const { data: sessionData, error: sessionError } = await db.from('sessions').insert({
+      facility_id: FACILITY_ID,
+      host_member_id: null,
+      bay_name: BAY_NAME,
+      session_date: today,
+      start_time: '16:00:00',
+      end_time: '17:30:00',
+      is_open: isOpen
+    }).select().single();
 
-    if (sessionError) {
-      showError('Session save failed: ' + sessionError.message);
-      submitted = false;
-      btn.disabled = false;
-      btn.textContent = 'Try again';
-      return;
-    }
+    if (sessionError) { showError('Session save failed: ' + sessionError.message); submitted = false; btn.disabled = false; return; }
 
-    const invitedIds = Object.entries(selected).filter(([,v]) => v).map(([k]) => k);
+    const invitedMembers = members.filter(m => selected[m.id]);
 
-    if (isOpen && invitedIds.length > 0) {
-      const inviteRows = invitedIds.map(id => ({
-        session_id: sessionData.id,
-        invited_member_id: id,
-        status: 'pending'
-      }));
+    if (isOpen && invitedMembers.length > 0) {
+      const inviteRows = invitedMembers.map(m => ({ session_id: sessionData.id, invited_member_id: m.id, status: 'pending' }));
+      const { data: inviteData, error: inviteError } = await db.from('invites').insert(inviteRows).select();
+      if (inviteError) { showError('Invite save failed: ' + inviteError.message); submitted = false; btn.disabled = false; return; }
 
-      const { error: inviteError } = await db.from('invites').insert(inviteRows);
+      document.getElementById('sending-bar').style.display = 'flex';
+      document.getElementById('sending-text').textContent = 'Sending invites...';
+      btn.textContent = 'Sending...';
 
-      if (inviteError) {
-        showError('Invites failed: ' + inviteError.message);
-        submitted = false;
-        btn.disabled = false;
-        btn.textContent = 'Try again';
-        return;
+      let sent = 0;
+      for (let i = 0; i < invitedMembers.length; i++) {
+        const member = invitedMembers[i];
+        const invite = inviteData[i];
+        document.getElementById('sending-text').textContent = `Sending to ${member.name}...`;
+        try {
+          await fetch('/api/send-invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              inviteId: invite.id,
+              memberName: member.name,
+              memberEmail: member.email,
+              hostName: HOST_NAME,
+              bayName: BAY_NAME,
+              sessionDate: dateLabel,
+              startTime: formatTime('16:00:00'),
+              endTime: formatTime('17:30:00'),
+              facilityName: FACILITY_NAME
+            })
+          });
+          sent++;
+        } catch(e) { console.error('Email failed for', member.name, e); }
       }
 
-      const invitedNames = members.filter(m => selected[m.id]).map(m => m.name).join(', ');
-      showConfirm('Session is open! Invites sent to ' + invitedNames + '.');
+      document.getElementById('sending-bar').style.display = 'none';
+      const names = invitedMembers.map(m => m.name).join(', ');
+      showConfirm(`Session is open! Invites sent to ${names}. They'll receive an email to accept or decline.`);
+      btn.textContent = 'Invites sent ✓';
     } else {
-      showConfirm('Booking confirmed. See you at Empire Bay!');
+      showConfirm('Booking confirmed. See you at ' + BAY_NAME + '!');
+      btn.textContent = 'Booked ✓';
     }
-
-    btn.textContent = isOpen && invitedIds.length > 0 ? 'Invites sent ✓' : 'Booked ✓';
   }
 
   function showConfirm(msg) {
@@ -255,6 +249,9 @@
     const el = document.getElementById('error-msg');
     el.textContent = msg;
     el.style.display = 'block';
+    submitted = false;
+    document.getElementById('main-btn').disabled = false;
+    document.getElementById('sending-bar').style.display = 'none';
   }
 
   loadMembers();
