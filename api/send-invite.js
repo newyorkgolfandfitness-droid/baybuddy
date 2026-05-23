@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const acceptUrl = `https://www.baybudd.pro/accept.html?invite=${inviteId}`;
+  const acceptUrl = `https://www.baybuddy.vercel.app/accept.html?invite=${inviteId}`;
 
   const html = `
     <!DOCTYPE html>
