@@ -111,7 +111,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'BayBuddy <invites@baybudd.pro>',
+        from: 'BayBuddy <invites@baybuddy.pro>',
         to: [memberEmail],
         subject: `${hostName} invited you to join their session at ${facilityName}`,
         html: html
