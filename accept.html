@@ -18,12 +18,19 @@
   .host-avatar { width: 42px; height: 42px; border-radius: 50%; background: #3a2e00; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #D4A800; flex-shrink: 0; }
   .host-label { font-size: 11px; color: #555; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.6px; }
   .host-name { font-size: 15px; font-weight: 500; color: #e8e8e8; }
-  .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
   .session-field { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 16px; }
   .field-label { font-size: 11px; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
   .field-value { font-size: 14px; font-weight: 500; color: #e8e8e8; }
   .field-value.gold { color: #D4A800; }
-  .divider { height: 0.5px; background: #222; margin-bottom: 24px; }
+  .capacity-bar { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+  .capacity-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+  .capacity-value { font-size: 14px; font-weight: 500; color: #e8e8e8; }
+  .capacity-dots { display: flex; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.filled { background: #D4A800; }
+  .dot.empty { background: #2a2a2a; border: 0.5px solid #333; }
+  .divider { height: 0.5px; background: #222; margin-bottom: 20px; }
   .action-label { font-size: 12px; color: #555; text-align: center; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
   .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
   .btn { padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
@@ -35,10 +42,12 @@
   .result-card { border-radius: 12px; padding: 20px; text-align: center; display: none; margin-bottom: 16px; }
   .result-card.accepted { background: #0f2a1a; border: 0.5px solid #1a5a30; }
   .result-card.declined { background: #1a1a1a; border: 0.5px solid #2a2a2a; }
+  .result-card.full { background: #2a1a00; border: 0.5px solid #5a3a00; }
   .result-icon { font-size: 32px; margin-bottom: 10px; }
   .result-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 6px; }
   .result-sub { font-size: 13px; color: #666; line-height: 1.5; }
   .result-sub.green { color: #4ade80; }
+  .result-sub.gold { color: #D4A800; }
   .loading-state { text-align: center; padding: 40px 20px; }
   .loading-spinner { width: 32px; height: 32px; border: 2px solid #222; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -54,16 +63,14 @@
 <div class="card">
   <div class="card-header">
     <div class="facility-name" id="facility-name">Loading...</div>
-    <div class="invite-title">You're invited!</div>
-    <div class="invite-sub">Someone wants you to join their session</div>
+    <div class="invite-title" id="header-title">You're invited!</div>
+    <div class="invite-sub" id="header-sub">Someone wants you to join their session</div>
   </div>
-
   <div class="card-body">
     <div id="loading-state" class="loading-state">
       <div class="loading-spinner"></div>
       <div class="loading-text">Loading your invite...</div>
     </div>
-
     <div id="main-content" style="display:none;">
       <div class="host-row">
         <div class="host-avatar" id="host-avatar">?</div>
@@ -72,60 +79,51 @@
           <div class="host-name" id="host-name">Loading...</div>
         </div>
       </div>
-
       <div class="session-grid">
-        <div class="session-field">
-          <div class="field-label">Bay</div>
-          <div class="field-value gold" id="bay-name">—</div>
-        </div>
-        <div class="session-field">
-          <div class="field-label">Date</div>
-          <div class="field-value" id="session-date">—</div>
-        </div>
-        <div class="session-field">
-          <div class="field-label">Start</div>
-          <div class="field-value" id="start-time">—</div>
-        </div>
-        <div class="session-field">
-          <div class="field-label">End</div>
-          <div class="field-value" id="end-time">—</div>
-        </div>
+        <div class="session-field"><div class="field-label">Bay</div><div class="field-value gold" id="bay-name">—</div></div>
+        <div class="session-field"><div class="field-label">Date</div><div class="field-value" id="session-date">—</div></div>
+        <div class="session-field"><div class="field-label">Start</div><div class="field-value" id="start-time">—</div></div>
+        <div class="session-field"><div class="field-label">End</div><div class="field-value" id="end-time">—</div></div>
       </div>
-
+      <div class="capacity-bar" id="capacity-bar">
+        <div>
+          <div class="capacity-label">Players confirmed</div>
+          <div class="capacity-value" id="capacity-text">Loading...</div>
+        </div>
+        <div class="capacity-dots" id="capacity-dots"></div>
+      </div>
       <div class="divider"></div>
-
       <div id="result-card" class="result-card">
         <div class="result-icon" id="result-icon"></div>
         <div class="result-title" id="result-title"></div>
         <div class="result-sub" id="result-sub"></div>
       </div>
-
       <div class="action-label" id="action-label">Will you join this session?</div>
       <div class="btn-group" id="btn-group">
         <button class="btn btn-accept" id="btn-accept" onclick="respond('accepted')">✓ Accept</button>
         <button class="btn btn-decline" id="btn-decline" onclick="respond('declined')">✕ Decline</button>
       </div>
     </div>
-
     <div id="error-state" class="error-state" style="display:none;">
       <div class="error-icon">⚠️</div>
       <div class="error-text" id="error-text">This invite could not be found.</div>
     </div>
   </div>
-
   <div class="footer">Powered by <span>BayBuddy</span></div>
 </div>
 
 <script>
   const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
+  const MAX_PLAYERS = 4;
+  const FACILITY_NAME = 'New York Golf & Fitness';
+  const HOST_NAME = 'Mike';
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let inviteId = null;
+  let inviteData = null;
 
-  function getParam(name) {
-    return new URLSearchParams(window.location.search).get(name);
-  }
+  function getParam(name) { return new URLSearchParams(window.location.search).get(name); }
 
   function formatDate(dateStr) {
     const d = new Date(dateStr + 'T00:00:00');
@@ -137,50 +135,60 @@
   function formatTime(timeStr) {
     const [h, m] = timeStr.split(':');
     const hour = parseInt(h);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const h12 = hour % 12 || 12;
-    return h12 + ':' + m + ' ' + ampm;
+    return (hour % 12 || 12) + ':' + m + ' ' + (hour >= 12 ? 'PM' : 'AM');
   }
 
-  function getInitials(name) {
-    return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+  function updateCapacityDisplay(acceptedCount) {
+    const text = document.getElementById('capacity-text');
+    const dots = document.getElementById('capacity-dots');
+    text.textContent = acceptedCount + ' of ' + MAX_PLAYERS + ' players';
+    dots.innerHTML = '';
+    for (let i = 0; i < MAX_PLAYERS; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot ' + (i < acceptedCount ? 'filled' : 'empty');
+      dots.appendChild(dot);
+    }
+  }
+
+  async function getAcceptedCount(sessionId) {
+    const { data, error } = await db.from('invites').select('id').eq('session_id', sessionId).eq('status', 'accepted');
+    if (error) return 0;
+    return (data ? data.length : 0) + 1;
   }
 
   async function loadInvite() {
     inviteId = getParam('invite');
+    if (!inviteId) { showError('No invite ID found. Please use the link from your email.'); return; }
 
-    if (!inviteId) {
-      showError('No invite ID found. Please use the link from your email.');
-      return;
-    }
+    const { data: invite, error } = await db.from('invites').select('*, sessions(*), members(*)').eq('id', inviteId).single();
+    if (error || !invite) { showError('This invite could not be found or has expired.'); return; }
 
-    const { data: invite, error } = await db
-      .from('invites')
-      .select('*, sessions(*), members(*)')
-      .eq('id', inviteId)
-      .single();
-
-    if (error || !invite) {
-      showError('This invite could not be found or has expired.');
-      return;
-    }
-
+    inviteData = invite;
     const session = invite.sessions;
     const member = invite.members;
+    const acceptedCount = await getAcceptedCount(session.id);
 
-    document.getElementById('facility-name').textContent = 'New York Golf & Fitness';
-    document.getElementById('host-name').textContent = 'Mike';
+    document.getElementById('facility-name').textContent = FACILITY_NAME;
+    document.getElementById('host-name').textContent = HOST_NAME;
     document.getElementById('host-avatar').textContent = 'MI';
     document.getElementById('bay-name').textContent = session.bay_name;
     document.getElementById('session-date').textContent = formatDate(session.session_date);
     document.getElementById('start-time').textContent = formatTime(session.start_time);
     document.getElementById('end-time').textContent = formatTime(session.end_time);
+    updateCapacityDisplay(acceptedCount);
 
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
 
     if (invite.status !== 'pending') {
-      showResult(invite.status);
+      showResult(invite.status, member.name);
+      document.getElementById('btn-group').style.display = 'none';
+      document.getElementById('action-label').style.display = 'none';
+      return;
+    }
+
+    if (acceptedCount >= MAX_PLAYERS) {
+      showResult('full', member.name);
       document.getElementById('btn-group').style.display = 'none';
       document.getElementById('action-label').style.display = 'none';
     }
@@ -190,11 +198,20 @@
     document.getElementById('btn-accept').disabled = true;
     document.getElementById('btn-decline').disabled = true;
 
-    const { error } = await db
-      .from('invites')
-      .update({ status: status })
-      .eq('id', inviteId);
+    const session = inviteData.sessions;
+    const member = inviteData.members;
 
+    if (status === 'accepted') {
+      const acceptedCount = await getAcceptedCount(session.id);
+      if (acceptedCount >= MAX_PLAYERS) {
+        showResult('full', member.name);
+        document.getElementById('btn-group').style.display = 'none';
+        document.getElementById('action-label').style.display = 'none';
+        return;
+      }
+    }
+
+    const { error } = await db.from('invites').update({ status: status }).eq('id', inviteId);
     if (error) {
       document.getElementById('btn-accept').disabled = false;
       document.getElementById('btn-decline').disabled = false;
@@ -202,17 +219,62 @@
       return;
     }
 
+    const newAcceptedCount = await getAcceptedCount(session.id);
+    updateCapacityDisplay(newAcceptedCount);
+
+    const dateLabel = formatDate(session.session_date);
+    const timeLabel = formatTime(session.start_time);
+
+    await fetch('/api/notify-facility', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        memberName: member.name,
+        hostName: HOST_NAME,
+        bayName: session.bay_name,
+        sessionDate: dateLabel,
+        startTime: timeLabel,
+        status: status,
+        facilityName: FACILITY_NAME,
+        currentCount: newAcceptedCount,
+        maxPlayers: MAX_PLAYERS
+      })
+    });
+
+    if (status === 'accepted' && newAcceptedCount >= MAX_PLAYERS) {
+      const { data: pendingInvites } = await db.from('invites').select('*, members(*)').eq('session_id', session.id).eq('status', 'pending');
+      if (pendingInvites && pendingInvites.length > 0) {
+        for (const pending of pendingInvites) {
+          await db.from('invites').update({ status: 'expired' }).eq('id', pending.id);
+          if (pending.members && pending.members.email) {
+            await fetch('/api/session-full', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                memberEmail: pending.members.email,
+                memberName: pending.members.name,
+                hostName: HOST_NAME,
+                bayName: session.bay_name,
+                sessionDate: dateLabel,
+                startTime: timeLabel,
+                facilityName: FACILITY_NAME
+              })
+            });
+          }
+        }
+      }
+    }
+
     document.getElementById('btn-group').style.display = 'none';
     document.getElementById('action-label').style.display = 'none';
-    showResult(status);
+    showResult(status, member.name);
   }
 
-  function showResult(status) {
+  function showResult(status, memberName) {
     const card = document.getElementById('result-card');
     const icon = document.getElementById('result-icon');
     const title = document.getElementById('result-title');
     const sub = document.getElementById('result-sub');
-
     card.style.display = 'block';
 
     if (status === 'accepted') {
@@ -221,11 +283,17 @@
       title.textContent = "You're in!";
       sub.textContent = "See you on the simulator. Have a great round!";
       sub.className = 'result-sub green';
+    } else if (status === 'full') {
+      card.className = 'result-card full';
+      icon.textContent = '⛔';
+      title.textContent = "Session is full";
+      sub.textContent = "Sorry, this session has reached capacity. You can still book your own bay!";
+      sub.className = 'result-sub gold';
     } else {
       card.className = 'result-card declined';
       icon.textContent = '👋';
       title.textContent = "Maybe next time";
-      sub.textContent = "You've declined this invite. You won't be added to this session.";
+      sub.textContent = "You've declined this invite.";
       sub.className = 'result-sub';
     }
   }
