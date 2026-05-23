@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Invite</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0a; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .card { background: #111; border-radius: 20px; width: 100%; max-width: 440px; overflow: hidden; border: 0.5px solid #222; }
+  .card-header { background: #1a1a1a; padding: 24px; border-bottom: 0.5px solid #2a2a2a; text-align: center; }
+  .facility-name { font-size: 13px; font-weight: 500; color: #D4A800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .invite-title { font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+  .invite-sub { font-size: 14px; color: #666; }
+  .card-body { padding: 28px 24px; }
+  .host-row { display: flex; align-items: center; gap: 14px; background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; }
+  .host-avatar { width: 42px; height: 42px; border-radius: 50%; background: #3a2e00; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #D4A800; flex-shrink: 0; }
+  .host-label { font-size: 11px; color: #555; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .host-name { font-size: 15px; font-weight: 500; color: #e8e8e8; }
+  .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .session-field { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 16px; }
+  .field-label { font-size: 11px; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .field-value { font-size: 14px; font-weight: 500; color: #e8e8e8; }
+  .field-value.gold { color: #D4A800; }
+  .divider { height: 0.5px; background: #222; margin-bottom: 24px; }
+  .action-label { font-size: 12px; color: #555; text-align: center; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .btn { padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-accept { background: #D4A800; color: #111; }
+  .btn-accept:hover { background: #e8b800; transform: translateY(-1px); }
+  .btn-decline { background: #1a1a1a; color: #888; border: 0.5px solid #2a2a2a; }
+  .btn-decline:hover { background: #222; color: #aaa; }
+  .btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+  .result-card { border-radius: 12px; padding: 20px; text-align: center; display: none; margin-bottom: 16px; }
+  .result-card.accepted { background: #0f2a1a; border: 0.5px solid #1a5a30; }
+  .result-card.declined { background: #1a1a1a; border: 0.5px solid #2a2a2a; }
+  .result-icon { font-size: 32px; margin-bottom: 10px; }
+  .result-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+  .result-sub { font-size: 13px; color: #666; line-height: 1.5; }
+  .result-sub.green { color: #4ade80; }
+  .loading-state { text-align: center; padding: 40px 20px; }
+  .loading-spinner { width: 32px; height: 32px; border: 2px solid #222; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: #555; }
+  .error-state { text-align: center; padding: 40px 20px; }
+  .error-icon { font-size: 32px; margin-bottom: 12px; }
+  .error-text { font-size: 14px; color: #f87171; }
+  .footer { text-align: center; padding: 0 0 20px; font-size: 11px; color: #2a2a2a; }
+  .footer span { color: #3a3a3a; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="facility-name" id="facility-name">Loading...</div>
+    <div class="invite-title">You're invited!</div>
+    <div class="invite-sub">Someone wants you to join their session</div>
+  </div>
+
+  <div class="card-body">
+    <div id="loading-state" class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading your invite...</div>
+    </div>
+
+    <div id="main-content" style="display:none;">
+      <div class="host-row">
+        <div class="host-avatar" id="host-avatar">?</div>
+        <div>
+          <div class="host-label">Host</div>
+          <div class="host-name" id="host-name">Loading...</div>
+        </div>
+      </div>
+
+      <div class="session-grid">
+        <div class="session-field">
+          <div class="field-label">Bay</div>
+          <div class="field-value gold" id="bay-name">—</div>
+        </div>
+        <div class="session-field">
+          <div class="field-label">Date</div>
+          <div class="field-value" id="session-date">—</div>
+        </div>
+        <div class="session-field">
+          <div class="field-label">Start</div>
+          <div class="field-value" id="start-time">—</div>
+        </div>
+        <div class="session-field">
+          <div class="field-label">End</div>
+          <div class="field-value" id="end-time">—</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div id="result-card" class="result-card">
+        <div class="result-icon" id="result-icon"></div>
+        <div class="result-title" id="result-title"></div>
+        <div class="result-sub" id="result-sub"></div>
+      </div>
+
+      <div class="action-label" id="action-label">Will you join this session?</div>
+      <div class="btn-group" id="btn-group">
+        <button class="btn btn-accept" id="btn-accept" onclick="respond('accepted')">✓ Accept</button>
+        <button class="btn btn-decline" id="btn-decline" onclick="respond('declined')">✕ Decline</button>
+      </div>
+    </div>
+
+    <div id="error-state" class="error-state" style="display:none;">
+      <div class="error-icon">⚠️</div>
+      <div class="error-text" id="error-text">This invite could not be found.</div>
+    </div>
+  </div>
+
+  <div class="footer">Powered by <span>BayBuddy</span></div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let inviteId = null;
+
+  function getParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+  }
+
+  function formatTime(timeStr) {
+    const [h, m] = timeStr.split(':');
+    const hour = parseInt(h);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const h12 = hour % 12 || 12;
+    return h12 + ':' + m + ' ' + ampm;
+  }
+
+  function getInitials(name) {
+    return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+  }
+
+  async function loadInvite() {
+    inviteId = getParam('invite');
+
+    if (!inviteId) {
+      showError('No invite ID found. Please use the link from your email.');
+      return;
+    }
+
+    const { data: invite, error } = await db
+      .from('invites')
+      .select('*, sessions(*), members(*)')
+      .eq('id', inviteId)
+      .single();
+
+    if (error || !invite) {
+      showError('This invite could not be found or has expired.');
+      return;
+    }
+
+    const session = invite.sessions;
+    const member = invite.members;
+
+    document.getElementById('facility-name').textContent = 'New York Golf & Fitness';
+    document.getElementById('host-name').textContent = 'Mike';
+    document.getElementById('host-avatar').textContent = 'MI';
+    document.getElementById('bay-name').textContent = session.bay_name;
+    document.getElementById('session-date').textContent = formatDate(session.session_date);
+    document.getElementById('start-time').textContent = formatTime(session.start_time);
+    document.getElementById('end-time').textContent = formatTime(session.end_time);
+
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+
+    if (invite.status !== 'pending') {
+      showResult(invite.status);
+      document.getElementById('btn-group').style.display = 'none';
+      document.getElementById('action-label').style.display = 'none';
+    }
+  }
+
+  async function respond(status) {
+    document.getElementById('btn-accept').disabled = true;
+    document.getElementById('btn-decline').disabled = true;
+
+    const { error } = await db
+      .from('invites')
+      .update({ status: status })
+      .eq('id', inviteId);
+
+    if (error) {
+      document.getElementById('btn-accept').disabled = false;
+      document.getElementById('btn-decline').disabled = false;
+      alert('Something went wrong. Please try again.');
+      return;
+    }
+
+    document.getElementById('btn-group').style.display = 'none';
+    document.getElementById('action-label').style.display = 'none';
+    showResult(status);
+  }
+
+  function showResult(status) {
+    const card = document.getElementById('result-card');
+    const icon = document.getElementById('result-icon');
+    const title = document.getElementById('result-title');
+    const sub = document.getElementById('result-sub');
+
+    card.style.display = 'block';
+
+    if (status === 'accepted') {
+      card.className = 'result-card accepted';
+      icon.textContent = '⛳';
+      title.textContent = "You're in!";
+      sub.textContent = "See you on the simulator. Have a great round!";
+      sub.className = 'result-sub green';
+    } else {
+      card.className = 'result-card declined';
+      icon.textContent = '👋';
+      title.textContent = "Maybe next time";
+      sub.textContent = "You've declined this invite. You won't be added to this session.";
+      sub.className = 'result-sub';
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').style.display = 'block';
+    document.getElementById('error-text').textContent = msg;
+  }
+
+  loadInvite();
+</script>
+</body>
+</html>
