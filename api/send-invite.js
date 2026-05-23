@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const acceptUrl = `https://www.baybuddy.vercel.app/accept.html?invite=${inviteId}`;
+  const acceptUrl = `https://baybuddy.vercel.app/accept.html?invite=${inviteId}`;
 
   const html = `
     <!DOCTYPE html>
@@ -23,8 +23,6 @@ export default async function handler(req, res) {
         <tr>
           <td align="center">
             <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#111;border-radius:16px;overflow:hidden;border:1px solid #222;">
-              
-              <!-- Header -->
               <tr>
                 <td style="background:#1a1a1a;padding:24px;text-align:center;border-bottom:1px solid #2a2a2a;">
                   <p style="margin:0 0 6px;font-size:12px;color:#D4A800;text-transform:uppercase;letter-spacing:1px;font-weight:500;">${facilityName}</p>
@@ -32,12 +30,8 @@ export default async function handler(req, res) {
                   <p style="margin:0;font-size:14px;color:#666;">${hostName} wants you to join their simulator session</p>
                 </td>
               </tr>
-
-              <!-- Session Details -->
               <tr>
                 <td style="padding:24px;">
-                  
-                  <!-- Host row -->
                   <table width="100%" cellpadding="0" cellspacing="0" style="background:#1a1a1a;border-radius:12px;margin-bottom:20px;border:1px solid #2a2a2a;">
                     <tr>
                       <td style="padding:14px 18px;">
@@ -46,8 +40,6 @@ export default async function handler(req, res) {
                       </td>
                     </tr>
                   </table>
-
-                  <!-- Session grid -->
                   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
                     <tr>
                       <td width="48%" style="background:#1a1a1a;border-radius:10px;padding:12px 16px;border:1px solid #2a2a2a;">
@@ -73,8 +65,6 @@ export default async function handler(req, res) {
                       </td>
                     </tr>
                   </table>
-
-                  <!-- CTA Button -->
                   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
                     <tr>
                       <td align="center" style="background:#D4A800;border-radius:10px;">
@@ -82,19 +72,14 @@ export default async function handler(req, res) {
                       </td>
                     </tr>
                   </table>
-
                   <p style="margin:0;font-size:12px;color:#444;text-align:center;">This invite was sent to ${memberEmail}</p>
-
                 </td>
               </tr>
-
-              <!-- Footer -->
               <tr>
                 <td style="padding:16px;text-align:center;border-top:1px solid #1a1a1a;">
                   <p style="margin:0;font-size:11px;color:#2a2a2a;">Powered by <span style="color:#3a3a3a;">BayBuddy</span></p>
                 </td>
               </tr>
-
             </table>
           </td>
         </tr>
@@ -119,13 +104,8 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(400).json({ error: data });
-    }
-
+    if (!response.ok) return res.status(400).json({ error: data });
     return res.status(200).json({ success: true, id: data.id });
-
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
