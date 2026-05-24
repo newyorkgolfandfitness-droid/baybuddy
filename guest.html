@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Session Invite</title>
+<title>Guest Invite</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,31 +14,29 @@
   .invite-title { font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 6px; }
   .invite-sub { font-size: 14px; color: #666; }
   .card-body { padding: 28px 24px; }
-  .host-row { display: flex; align-items: center; gap: 14px; background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; }
-  .host-avatar { width: 42px; height: 42px; border-radius: 50%; background: #3a2e00; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #D4A800; flex-shrink: 0; }
-  .host-label { font-size: 11px; color: #555; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.6px; }
-  .host-name { font-size: 15px; font-weight: 500; color: #e8e8e8; }
-  .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .capacity-bar { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .capacity-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+  .capacity-value { font-size: 14px; font-weight: 500; color: #e8e8e8; }
+  .capacity-dots { display: flex; gap: 6px; }
+  .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
   .session-field { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 16px; }
   .field-label { font-size: 11px; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
   .field-value { font-size: 14px; font-weight: 500; color: #e8e8e8; }
   .field-value.gold { color: #D4A800; }
-  .capacity-bar { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-  .capacity-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
-  .capacity-value { font-size: 14px; font-weight: 500; color: #e8e8e8; }
-  .capacity-dots { display: flex; gap: 6px; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; }
-  .dot.filled { background: #D4A800; }
-  .dot.empty { background: #2a2a2a; border: 0.5px solid #333; }
+  .fee-notice { background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
+  .fee-text { font-size: 14px; color: #D4A800; line-height: 1.5; }
   .divider { height: 0.5px; background: #222; margin-bottom: 20px; }
-  .action-label { font-size: 12px; color: #555; text-align: center; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
-  .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .btn { padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-  .btn-accept { background: #D4A800; color: #111; }
-  .btn-accept:hover { background: #e8b800; transform: translateY(-1px); }
+  .form-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; text-align: center; }
+  .input-group { margin-bottom: 12px; }
+  .input-label { font-size: 11px; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .input { width: 100%; background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 12px 14px; font-size: 14px; color: #e8e8e8; outline: none; }
+  .input:focus { border-color: #D4A800; }
+  .input::placeholder { color: #444; }
+  .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #D4A800; color: #111; margin-bottom: 12px; }
+  .btn:hover { background: #e8b800; }
+  .btn:disabled { background: #2a2a2a; color: #444; cursor: default; }
   .btn-decline { background: #1a1a1a; color: #888; border: 0.5px solid #2a2a2a; }
   .btn-decline:hover { background: #222; color: #aaa; }
-  .btn:disabled { opacity: 0.4; cursor: default; transform: none; }
   .result-card { border-radius: 12px; padding: 20px; text-align: center; display: none; margin-bottom: 16px; }
   .result-card.accepted { background: #0f2a1a; border: 0.5px solid #1a5a30; }
   .result-card.declined { background: #1a1a1a; border: 0.5px solid #2a2a2a; }
@@ -62,48 +60,63 @@
 <body>
 <div class="card">
   <div class="card-header">
-    <div class="facility-name" id="facility-name">Loading...</div>
-    <div class="invite-title">You're invited!</div>
-    <div class="invite-sub">Someone wants you to join their session</div>
+    <div class="facility-name">New York Golf & Fitness</div>
+    <div class="invite-title">You're invited! ⛳</div>
+    <div class="invite-sub" id="header-sub">Someone wants you to come play</div>
   </div>
   <div class="card-body">
     <div id="loading-state" class="loading-state">
       <div class="loading-spinner"></div>
       <div class="loading-text">Loading your invite...</div>
     </div>
+
     <div id="main-content" style="display:none;">
-      <div class="host-row">
-        <div class="host-avatar" id="host-avatar">?</div>
-        <div>
-          <div class="host-label">Host</div>
-          <div class="host-name" id="host-name">Loading...</div>
-        </div>
-      </div>
-      <div class="session-grid">
-        <div class="session-field"><div class="field-label">Bay</div><div class="field-value gold" id="bay-name">—</div></div>
-        <div class="session-field"><div class="field-label">Date</div><div class="field-value" id="session-date">—</div></div>
-        <div class="session-field"><div class="field-label">Start</div><div class="field-value" id="start-time">—</div></div>
-        <div class="session-field"><div class="field-label">End</div><div class="field-value" id="end-time">—</div></div>
-      </div>
-      <div class="capacity-bar" id="capacity-bar">
+      <div class="capacity-bar">
         <div>
           <div class="capacity-label">Players confirmed</div>
           <div class="capacity-value" id="capacity-text">Loading...</div>
         </div>
         <div class="capacity-dots" id="capacity-dots"></div>
       </div>
+
+      <div class="session-grid">
+        <div class="session-field"><div class="field-label">Bay</div><div class="field-value gold" id="bay-name">—</div></div>
+        <div class="session-field"><div class="field-label">Date</div><div class="field-value" id="session-date">—</div></div>
+        <div class="session-field"><div class="field-label">Start</div><div class="field-value" id="start-time">—</div></div>
+        <div class="session-field"><div class="field-label">End</div><div class="field-value" id="end-time">—</div></div>
+      </div>
+
+      <div class="fee-notice">
+        <div class="fee-text">💰 <strong>Guest fee: $25/hr</strong> — pay when you arrive, no need to prepay. We'll take care of you when you get here!</div>
+      </div>
+
       <div class="divider"></div>
+
       <div id="result-card" class="result-card">
         <div class="result-icon" id="result-icon"></div>
         <div class="result-title" id="result-title"></div>
         <div class="result-sub" id="result-sub"></div>
       </div>
-      <div class="action-label" id="action-label">Will you join this session?</div>
-      <div class="btn-group" id="btn-group">
-        <button class="btn btn-accept" id="btn-accept" onclick="respond('accepted')">✓ Accept</button>
-        <button class="btn btn-decline" id="btn-decline" onclick="respond('declined')">✕ Decline</button>
+
+      <div id="form-section">
+        <div class="form-label">Fill in your details to confirm</div>
+        <div class="input-group">
+          <div class="input-label">Full Name *</div>
+          <input class="input" id="guest-name" type="text" placeholder="Your full name">
+        </div>
+        <div class="input-group">
+          <div class="input-label">Email *</div>
+          <input class="input" id="guest-email" type="email" placeholder="your@email.com">
+        </div>
+        <div class="input-group">
+          <div class="input-label">Phone</div>
+          <input class="input" id="guest-phone" type="tel" placeholder="(845) 000-0000">
+        </div>
+        <button class="btn" id="btn-accept" onclick="respond('accepted')">I'm in — Let's Play! 🏌️</button>
+        <button class="btn btn-decline" id="btn-decline" onclick="respond('declined')">Can't make it this time</button>
       </div>
     </div>
+
     <div id="error-state" class="error-state" style="display:none;">
       <div style="font-size:32px;margin-bottom:12px;">⚠️</div>
       <div class="error-text" id="error-text">This invite could not be found.</div>
@@ -116,12 +129,11 @@
   const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
   const MAX_PLAYERS = 4;
-  const FACILITY_NAME = 'New York Golf & Fitness';
-  const HOST_NAME = 'Mike';
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let inviteId = null;
-  let inviteData = null;
+  let guestId = null;
+  let guestData = null;
+  let sessionData = null;
 
   function getParam(name) { return new URLSearchParams(window.location.search).get(name); }
 
@@ -138,17 +150,6 @@
     return (hour % 12 || 12) + ':' + m + ' ' + (hour >= 12 ? 'PM' : 'AM');
   }
 
-  function updateCapacityDisplay(count) {
-    document.getElementById('capacity-text').textContent = count + ' of ' + MAX_PLAYERS + ' players';
-    const dots = document.getElementById('capacity-dots');
-    dots.innerHTML = '';
-    for (let i = 0; i < MAX_PLAYERS; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'dot ' + (i < count ? 'filled' : 'empty');
-      dots.appendChild(dot);
-    }
-  }
-
   async function getTotalAccepted(sessionId) {
     const [membersRes, guestsRes] = await Promise.all([
       db.from('invites').select('id').eq('session_id', sessionId).eq('status', 'accepted'),
@@ -156,43 +157,55 @@
     ]);
     const memberCount = membersRes.data ? membersRes.data.length : 0;
     const guestCount = guestsRes.data ? guestsRes.data.length : 0;
-    return memberCount + guestCount + 1; // +1 for host
+    return memberCount + guestCount + 1;
+  }
+
+  function updateCapacityDisplay(count) {
+    document.getElementById('capacity-text').textContent = count + ' of ' + MAX_PLAYERS + ' players';
+    const dots = document.getElementById('capacity-dots');
+    dots.innerHTML = '';
+    for (let i = 0; i < MAX_PLAYERS; i++) {
+      const dot = document.createElement('div');
+      dot.style.cssText = 'width:12px;height:12px;border-radius:50%;' + (i < count ? 'background:#D4A800;' : 'background:#2a2a2a;border:0.5px solid #333;');
+      dots.appendChild(dot);
+    }
   }
 
   async function loadInvite() {
-    inviteId = getParam('invite');
-    if (!inviteId) { showError('No invite ID found. Please use the link from your email.'); return; }
+    guestId = getParam('guest');
+    if (!guestId) { showError('No invite ID found. Please use the link from your email.'); return; }
 
-    const { data: invite, error } = await db.from('invites').select('*, sessions(*), members(*)').eq('id', inviteId).single();
-    if (error || !invite) { showError('This invite could not be found or has expired.'); return; }
+    const { data: guest, error: guestError } = await db.from('guests').select('*').eq('id', guestId).single();
+    if (guestError || !guest) { showError('This invite could not be found or has expired.'); return; }
+    guestData = guest;
 
-    inviteData = invite;
-    const session = invite.sessions;
+    const { data: session, error: sessionError } = await db.from('sessions').select('*').eq('id', guest.session_id).single();
+    if (sessionError || !session) { showError('Session not found.'); return; }
+    sessionData = session;
+
     const totalAccepted = await getTotalAccepted(session.id);
+    updateCapacityDisplay(totalAccepted);
 
-    document.getElementById('facility-name').textContent = FACILITY_NAME;
-    document.getElementById('host-name').textContent = HOST_NAME;
-    document.getElementById('host-avatar').textContent = 'MI';
+    document.getElementById('header-sub').textContent = guest.invited_by + ' wants you to come play!';
     document.getElementById('bay-name').textContent = session.bay_name;
     document.getElementById('session-date').textContent = formatDate(session.session_date);
     document.getElementById('start-time').textContent = formatTime(session.start_time);
     document.getElementById('end-time').textContent = formatTime(session.end_time);
-    updateCapacityDisplay(totalAccepted);
+
+    if (guest.email) document.getElementById('guest-email').value = guest.email;
 
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
 
-    if (invite.status !== 'pending') {
-      showResult(invite.status);
-      document.getElementById('btn-group').style.display = 'none';
-      document.getElementById('action-label').style.display = 'none';
+    if (guest.status !== 'pending') {
+      showResult(guest.status);
+      document.getElementById('form-section').style.display = 'none';
       return;
     }
 
     if (totalAccepted >= MAX_PLAYERS) {
       showResult('full');
-      document.getElementById('btn-group').style.display = 'none';
-      document.getElementById('action-label').style.display = 'none';
+      document.getElementById('form-section').style.display = 'none';
     }
   }
 
@@ -200,96 +213,68 @@
     document.getElementById('btn-accept').disabled = true;
     document.getElementById('btn-decline').disabled = true;
 
-    const session = inviteData.sessions;
-    const member = inviteData.members;
-
     if (status === 'accepted') {
-      const totalAccepted = await getTotalAccepted(session.id);
-      if (totalAccepted >= MAX_PLAYERS) {
-        showResult('full');
-        document.getElementById('btn-group').style.display = 'none';
-        document.getElementById('action-label').style.display = 'none';
+      const name = document.getElementById('guest-name').value.trim();
+      const email = document.getElementById('guest-email').value.trim();
+      const phone = document.getElementById('guest-phone').value.trim();
+
+      if (!name || !email) {
+        alert('Please enter your full name and email to confirm.');
+        document.getElementById('btn-accept').disabled = false;
+        document.getElementById('btn-decline').disabled = false;
         return;
       }
-    }
 
-    const { error } = await db.from('invites').update({ status }).eq('id', inviteId);
-    if (error) {
-      document.getElementById('btn-accept').disabled = false;
-      document.getElementById('btn-decline').disabled = false;
-      alert('Something went wrong. Please try again.');
-      return;
-    }
-
-    const newTotal = await getTotalAccepted(session.id);
-    updateCapacityDisplay(newTotal);
-
-    const dateLabel = formatDate(session.session_date);
-    const timeLabel = formatTime(session.start_time);
-
-    await fetch('/api/notify-facility', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        memberName: member.name,
-        hostName: HOST_NAME,
-        bayName: session.bay_name,
-        sessionDate: dateLabel,
-        startTime: timeLabel,
-        status,
-        facilityName: FACILITY_NAME,
-        currentCount: newTotal,
-        maxPlayers: MAX_PLAYERS
-      })
-    });
-
-    if (status === 'accepted' && newTotal >= MAX_PLAYERS) {
-      const { data: pendingInvites } = await db.from('invites').select('*, members(*)').eq('session_id', session.id).eq('status', 'pending');
-      if (pendingInvites && pendingInvites.length > 0) {
-        for (const pending of pendingInvites) {
-          await db.from('invites').update({ status: 'expired' }).eq('id', pending.id);
-          if (pending.members && pending.members.email) {
-            await fetch('/api/session-full', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                memberEmail: pending.members.email,
-                memberName: pending.members.name,
-                hostName: HOST_NAME,
-                bayName: session.bay_name,
-                sessionDate: dateLabel,
-                startTime: timeLabel,
-                facilityName: FACILITY_NAME
-              })
-            });
-          }
-        }
+      const totalAccepted = await getTotalAccepted(sessionData.id);
+      if (totalAccepted >= MAX_PLAYERS) {
+        showResult('full');
+        document.getElementById('form-section').style.display = 'none';
+        return;
       }
-      const { data: pendingGuests } = await db.from('guests').select('*').eq('session_id', session.id).eq('status', 'pending');
-      if (pendingGuests && pendingGuests.length > 0) {
-        for (const guest of pendingGuests) {
-          await db.from('guests').update({ status: 'expired' }).eq('id', guest.id);
-          if (guest.email) {
-            await fetch('/api/session-full', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                memberEmail: guest.email,
-                memberName: guest.full_name || 'Guest',
-                hostName: HOST_NAME,
-                bayName: session.bay_name,
-                sessionDate: dateLabel,
-                startTime: timeLabel,
-                facilityName: FACILITY_NAME
-              })
-            });
-          }
-        }
+
+      const { error } = await db.from('guests').update({
+        full_name: name,
+        email: email,
+        phone: phone,
+        status: 'accepted'
+      }).eq('id', guestId);
+
+      if (error) {
+        alert('Something went wrong. Please try again.');
+        document.getElementById('btn-accept').disabled = false;
+        document.getElementById('btn-decline').disabled = false;
+        return;
       }
+
+      const newTotal = await getTotalAccepted(sessionData.id);
+      updateCapacityDisplay(newTotal);
+
+      try {
+        await fetch('/api/notify-facility', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberName: name + ' (Guest)',
+            hostName: guestData.invited_by,
+            bayName: sessionData.bay_name,
+            sessionDate: formatDate(sessionData.session_date),
+            startTime: formatTime(sessionData.start_time),
+            status: 'accepted',
+            facilityName: 'New York Golf & Fitness',
+            currentCount: newTotal,
+            maxPlayers: MAX_PLAYERS,
+            guestPhone: phone,
+            guestEmail: email,
+            isGuest: true
+          })
+        });
+      } catch(e) { console.error('Notify failed:', e); }
+
+    } else {
+      await db.from('guests').update({ status: 'declined' }).eq('id', guestId);
     }
 
-    document.getElementById('btn-group').style.display = 'none';
-    document.getElementById('action-label').style.display = 'none';
+    document.getElementById('form-section').style.display = 'none';
     showResult(status);
   }
 
@@ -303,26 +288,25 @@
     if (status === 'accepted') {
       card.className = 'result-card accepted';
       icon.textContent = '⛳';
-      title.textContent = "You're in!";
-      sub.textContent = "See you on the simulator. Have a great round!";
+      title.textContent = "You're in! See you soon.";
+      sub.textContent = "We can't wait to have you. Remember — guest fee is $25/hr, collected when you arrive. Have an amazing round!";
       sub.className = 'result-sub green';
     } else if (status === 'full') {
       card.className = 'result-card full';
       icon.textContent = '⛔';
       title.textContent = "Session is full";
-      sub.textContent = "This session has reached capacity — but you can still grab your own bay and play alongside them!";
+      sub.textContent = "This session has reached capacity but you can still book your own bay!";
       sub.className = 'result-sub gold';
       const bookBtn = document.createElement('a');
       bookBtn.href = 'https://www.newyorkgolfandfitness.com/';
       bookBtn.textContent = 'Book your own bay →';
-      bookBtn.className = 'book-btn';
       bookBtn.style.cssText = 'display:block;margin-top:14px;padding:14px;background:#D4A800;border-radius:10px;color:#111;font-size:15px;font-weight:600;text-decoration:none;text-align:center;';
       card.appendChild(bookBtn);
     } else {
       card.className = 'result-card declined';
       icon.textContent = '👋';
-      title.textContent = "Maybe next time";
-      sub.textContent = "You've declined this invite. Hope to see you on the simulator soon!";
+      title.textContent = "Maybe next time!";
+      sub.textContent = "No worries — hope to see you on the simulator soon. You can always book your own session.";
       sub.className = 'result-sub';
       const bookBtn = document.createElement('a');
       bookBtn.href = 'https://www.newyorkgolfandfitness.com/';
