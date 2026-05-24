@@ -94,9 +94,9 @@
     <div class="section-label">Your session</div>
     <div class="session-card">
       <div><div class="field-label">Bay</div><div class="field-value gold">Empire Bay</div></div>
-      <div><div class="field-label">Member</div><div class="field-value">Mike</div></div>
+      <div><div class="field-label">Member</div><div class="field-value" id="member-display">Mike</div></div>
       <div><div class="field-label">Date</div><div class="field-value" id="session-date"></div></div>
-      <div><div class="field-label">Time</div><div class="field-value">4:00 – 5:30 PM</div></div>
+      <div><div class="field-label">Time</div><div class="field-value" id="session-time">4:00 – 5:30 PM</div></div>
     </div>
 
     <div class="section-label">Session type</div>
@@ -205,11 +205,14 @@ const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
 const FACILITY_ID = '00000000-0000-0000-0000-000000000001';
 const FACILITY_NAME = 'New York Golf & Fitness';
-const HOST_NAME = 'Mike';
-const HOST_MEMBER_ID = 'f1916fea-5397-4155-b121-1bd493d020b6';
-const BAY_NAME = 'Empire Bay';
-const HOST_HANDICAP = 11;
-const HANDICAP_RANGE = 5;
+function p(name, def) { return new URLSearchParams(window.location.search).get(name) || def; }
+const HOST_NAME = p('member', 'Mike');
+const HOST_MEMBER_ID = p('memberid', 'f1916fea-5397-4155-b121-1bd493d020b6');
+const BAY_NAME = p('bay', 'Empire Bay');
+const SESSION_DATE_PARAM = p('date', null);
+const SESSION_TIME_PARAM = p('time', null);
+const SESSION_ENDTIME_PARAM = p('endtime', null);
+const HOST_HANDICAP = parseInt(p('handicap', '11'));
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -224,7 +227,22 @@ let submitted = false;
 const d = new Date();
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-document.getElementById('session-date').textContent = MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+document.getElementById('member-display').textContent = HOST_NAME;
+// Set date display
+if (SESSION_DATE_PARAM) {
+  const sd = new Date(SESSION_DATE_PARAM + 'T00:00:00');
+  document.getElementById('session-date').textContent = MONTHS[sd.getMonth()] + ' ' + sd.getDate() + ', ' + sd.getFullYear();
+} else {
+  document.getElementById('session-date').textContent = MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+}
+// Set time display
+if (SESSION_TIME_PARAM) {
+  const [sh,sm] = SESSION_TIME_PARAM.split(':'); const shr = parseInt(sh);
+  const startStr = (shr%12||12)+':'+sm+' '+(shr>=12?'PM':'AM');
+  let endStr = '5:30 PM';
+  if (SESSION_ENDTIME_PARAM) { const [eh,em] = SESSION_ENDTIME_PARAM.split(':'); const ehr = parseInt(eh); endStr = (ehr%12||12)+':'+em+' '+(ehr>=12?'PM':'AM'); }
+  document.getElementById('session-time').textContent = startStr + ' 2013 ' + endStr;
+}
 
 function fmtTime(t) {
   const [h,m] = t.split(':'); const hr = parseInt(h);
@@ -405,7 +423,7 @@ async function sendMemberInvites(sessionId, invitedMembers, dateLabel) {
     try {
       await fetch('/api/send-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
         inviteId:inv.id,memberName:m.name,memberEmail:m.email,hostName:HOST_NAME,bayName:BAY_NAME,
-        sessionDate:dateLabel,startTime:fmtTime('16:00:00'),endTime:fmtTime('17:30:00'),facilityName:FACILITY_NAME
+        sessionDate:dateLabel,startTime:SESSION_TIME_PARAM?fmtTime(SESSION_TIME_PARAM+':00'):fmtTime('16:00:00'),endTime:SESSION_ENDTIME_PARAM?fmtTime(SESSION_ENDTIME_PARAM+':00'):fmtTime('17:30:00'),facilityName:FACILITY_NAME
       })});
     } catch(e) { console.error(e); }
   }
@@ -419,7 +437,7 @@ async function sendGuestInvites(sessionId, dateLabel) {
       try {
         await fetch('/api/send-guest-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
           guestEmail:email,hostName:HOST_NAME,bayName:BAY_NAME,sessionDate:dateLabel,
-          startTime:fmtTime('16:00:00'),endTime:fmtTime('17:30:00'),facilityName:FACILITY_NAME,
+          startTime:SESSION_TIME_PARAM?fmtTime(SESSION_TIME_PARAM+':00'):fmtTime('16:00:00'),endTime:SESSION_ENDTIME_PARAM?fmtTime(SESSION_ENDTIME_PARAM+':00'):fmtTime('17:30:00'),facilityName:FACILITY_NAME,
           acceptUrl:'https://baybuddy.vercel.app/guest.html?guest='+gd.id
         })});
       } catch(e) { console.error(e); }
@@ -438,7 +456,7 @@ async function handleSubmit() {
 
   const {data:sess,error:sessErr} = await db.from('sessions').insert({
     facility_id:FACILITY_ID,host_member_id:null,bay_name:BAY_NAME,
-    session_date:today,start_time:'16:00:00',end_time:'17:30:00',is_open:isOpen
+    session_date:SESSION_DATE_PARAM||today,start_time:SESSION_TIME_PARAM?SESSION_TIME_PARAM+':00':'16:00:00',end_time:SESSION_ENDTIME_PARAM?SESSION_ENDTIME_PARAM+':00':'17:30:00',is_open:isOpen
   }).select().single();
 
   if (sessErr) { showError('Session save failed: '+sessErr.message); submitted=false; btn.disabled=false; return; }
