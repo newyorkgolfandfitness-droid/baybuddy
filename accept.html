@@ -312,12 +312,12 @@
     } else if (status === 'full' || status === 'expired') {
       card.className = 'result-card full';
       icon.textContent = '⛔';
-      title.textContent = "Session is full";
-      sub.textContent = "This session reached capacity — but you can still grab your own bay and play alongside them!";
+      title.textContent = "Dang, that session filled up fast! 🔥";
+      sub.textContent = "The good news? You can still grab a bay right next to them and make it a party. Book your own sim and keep the round going!";
       sub.className = 'result-sub gold';
       const bookBtn = document.createElement('a');
       bookBtn.href = 'https://www.newyorkgolfandfitness.com/';
-      bookBtn.textContent = 'Book your own bay →';
+      bookBtn.textContent = 'Grab the bay next door →';
       bookBtn.className = 'book-btn';
       bookBtn.style.cssText = 'display:block;margin-top:14px;padding:14px;background:#D4A800;border-radius:10px;color:#111;font-size:15px;font-weight:600;text-decoration:none;text-align:center;';
       card.appendChild(bookBtn);
