@@ -46,7 +46,6 @@
   .result-sub { font-size: 13px; color: #666; line-height: 1.5; }
   .result-sub.green { color: #4ade80; }
   .result-sub.gold { color: #D4A800; }
-  .book-btn { display: block; margin-top: 14px; padding: 14px; background: #D4A800; border-radius: 10px; color: #111; font-size: 15px; font-weight: 600; text-decoration: none; text-align: center; }
   .loading-state { text-align: center; padding: 40px 20px; }
   .loading-spinner { width: 32px; height: 32px; border: 2px solid #222; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -186,31 +185,28 @@
     const totalAccepted = await getTotalAccepted(session.id);
     updateCapacityDisplay(totalAccepted);
 
-    document.getElementById('header-sub').textContent = guest.invited_by + ' wants you to come play!';
+    document.getElementById('header-sub').textContent = (guest.invited_by || 'Someone') + ' wants you to come play!';
     document.getElementById('bay-name').textContent = session.bay_name;
     document.getElementById('session-date').textContent = formatDate(session.session_date);
     document.getElementById('start-time').textContent = formatTime(session.start_time);
     document.getElementById('end-time').textContent = formatTime(session.end_time);
-
     if (guest.email) document.getElementById('guest-email').value = guest.email;
 
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
 
-    // Check capacity FIRST
-    if (totalAccepted >= MAX_PLAYERS && guest.status === "pending") {
-      showResult("full");
-      document.getElementById("form-section").style.display = "none";
-      return;
-    }
-
-    // Then check if already responded
-    if (guest.status !== "pending") {
-      showResult(guest.status);
+    // Check expired or full FIRST
+    if (guest.status === 'expired' || (guest.status === 'pending' && totalAccepted >= MAX_PLAYERS)) {
+      showResult('full');
       document.getElementById('form-section').style.display = 'none';
       return;
     }
 
+    // Already responded
+    if (guest.status !== 'pending') {
+      showResult(guest.status);
+      document.getElementById('form-section').style.display = 'none';
+    }
   }
 
   async function respond(status) {
@@ -230,6 +226,10 @@
       }
 
       const totalAccepted = await getTotalAccepted(sessionData.id);
+      if (totalAccepted >= MAX_PLAYERS) {
+        showResult('full');
+        document.getElementById('form-section').style.display = 'none';
+        return;
       }
 
       const { error } = await db.from('guests').update({
@@ -293,8 +293,8 @@
       sub.className = 'result-sub green';
     } else if (status === 'full' || status === 'expired') {
       card.className = 'result-card full';
-      icon.textContent = '⛔';
-      title.textContent = "Dang, that session filled up fast! 🔥";
+      icon.textContent = '🔥';
+      title.textContent = "Dang, that session filled up fast!";
       sub.textContent = "The good news? You can still grab a bay right next to them and make it a party. Book your own sim and keep the round going!";
       sub.className = 'result-sub gold';
       const bookBtn = document.createElement('a');
