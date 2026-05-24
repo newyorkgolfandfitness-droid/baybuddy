@@ -26,7 +26,23 @@
   .switch.on { background: #D4A800; }
   .switch-knob { width: 18px; height: 18px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; }
   .switch.on .switch-knob { transform: translateX(20px); }
-  .invite-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; display: none; }
+
+  /* Filter chips */
+  .filter-section { margin-bottom: 20px; }
+  .filter-label { font-size: 11px; font-weight: 500; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 0.5px solid #2a2a2a; background: #1a1a1a; color: #888; white-space: nowrap; }
+  .chip:hover { border-color: #D4A800; color: #D4A800; }
+  .chip.active { background: #D4A800; color: #111; border-color: #D4A800; }
+  .chip.soon { opacity: 0.4; cursor: default; }
+  .chip.soon:hover { border-color: #2a2a2a; color: #888; }
+  .soon-badge { font-size: 9px; background: #2a2a2a; color: #666; border-radius: 4px; padding: 1px 4px; margin-left: 4px; vertical-align: middle; }
+
+  /* Anyone mode */
+  .anyone-notice { background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
+  .anyone-notice-text { font-size: 13px; color: #D4A800; line-height: 1.5; }
+
+  .invite-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
   .invite-hint { font-size: 12px; color: #555; margin-bottom: 14px; }
   .member-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid #222; cursor: pointer; }
   .member-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -37,7 +53,7 @@
   .member-hcp { font-size: 12px; color: #555; }
   .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 12px; }
   .checkbox.checked { background: #D4A800; border-color: #D4A800; color: #111; }
-  .guest-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: none; }
+  .guest-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
   .guest-title { font-size: 13px; font-weight: 500; color: #e8e8e8; margin-bottom: 4px; }
   .guest-sub { font-size: 12px; color: #555; margin-bottom: 16px; }
   .guest-input-row { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -48,7 +64,6 @@
   .add-guest-btn:hover { background: #1f1f00; }
   .guest-list { margin-top: 12px; }
   .guest-tag { display: flex; align-items: center; gap: 8px; background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
-  .guest-tag-icon { font-size: 14px; }
   .guest-tag-email { font-size: 13px; color: #D4A800; flex: 1; }
   .guest-tag-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 16px; padding: 0; line-height: 1; }
   .guest-tag-remove:hover { color: #f87171; }
@@ -95,16 +110,57 @@
     </div>
 
     <div id="open-section" style="display:none;">
-      <div class="section-label">Invite members</div>
-      <div class="invite-panel" id="invite-panel" style="display:block;">
-        <div class="invite-hint">Select members from your facility</div>
-        <div id="member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading members...</div></div>
+
+      <!-- Filter chips -->
+      <div class="filter-section">
+        <div class="filter-label">Who can join?</div>
+        <div class="filter-chips">
+          <div class="chip active" id="chip-specific" onclick="setFilter('specific')">Specific People</div>
+          <div class="chip" id="chip-anyone" onclick="setFilter('anyone')">Anyone</div>
+          <div class="chip soon" id="chip-circle" onclick="setFilter('circle')">My Circle <span class="soon-badge">Soon</span></div>
+          <div class="chip soon" id="chip-handicap" onclick="setFilter('handicap')">Similar Handicap <span class="soon-badge">Soon</span></div>
+          <div class="chip soon" id="chip-played" onclick="setFilter('played')">Played Before <span class="soon-badge">Soon</span></div>
+        </div>
+      </div>
+
+      <!-- Specific people mode -->
+      <div id="mode-specific">
+        <div class="section-label">Invite members</div>
+        <div class="invite-panel" id="invite-panel">
+          <div class="invite-hint">Select members from your facility</div>
+          <div id="member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading members...</div></div>
+        </div>
+      </div>
+
+      <!-- Anyone mode -->
+      <div id="mode-anyone" style="display:none;">
+        <div class="anyone-notice">
+          <div class="anyone-notice-text">🏌️ <strong>Open to everyone</strong> — all facility members will receive an invite and can join your session on a first-come, first-served basis until the bay is full.</div>
+        </div>
+      </div>
+
+      <!-- Coming soon modes -->
+      <div id="mode-circle" style="display:none;">
+        <div class="anyone-notice">
+          <div class="anyone-notice-text">👥 <strong>My Circle</strong> — invite your saved group of regular playing partners. Coming soon!</div>
+        </div>
+      </div>
+      <div id="mode-handicap" style="display:none;">
+        <div class="anyone-notice">
+          <div class="anyone-notice-text">⛳ <strong>Similar Handicap</strong> — automatically invite members within 4 strokes of your handicap. Coming soon!</div>
+        </div>
+      </div>
+      <div id="mode-played" style="display:none;">
+        <div class="anyone-notice">
+          <div class="anyone-notice-text">🔄 <strong>Played Before</strong> — invite members you've shared a session with previously. Coming soon!</div>
+        </div>
       </div>
 
       <div class="divider"></div>
 
+      <!-- Guest invite — always visible -->
       <div class="section-label">Invite a guest</div>
-      <div class="guest-panel" id="guest-panel" style="display:block;">
+      <div class="guest-panel">
         <div class="guest-title">Not a member yet?</div>
         <div class="guest-sub">Enter their email to send them a guest invite. $25/hr fee collected at the facility.</div>
         <div class="guest-input-row">
@@ -113,6 +169,7 @@
         </div>
         <div class="guest-list" id="guest-list"></div>
       </div>
+
     </div>
 
     <div class="sending-bar" id="sending-bar">
@@ -143,6 +200,7 @@
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let isOpen = false;
+  let currentFilter = 'specific';
   let members = [];
   let selected = {};
   let guestEmails = [];
@@ -157,6 +215,19 @@
     const [h,m] = t.split(':');
     const hr = parseInt(h);
     return (hr % 12 || 12) + ':' + m + ' ' + (hr >= 12 ? 'PM' : 'AM');
+  }
+
+  function setFilter(filter) {
+    const soon = ['circle', 'handicap', 'played'];
+    if (soon.includes(filter)) return;
+
+    currentFilter = filter;
+    ['specific','anyone','circle','handicap','played'].forEach(f => {
+      document.getElementById('chip-' + f).className = 'chip' + (soon.includes(f) ? ' soon' : '') + (f === filter ? ' active' : '');
+      const mode = document.getElementById('mode-' + f);
+      if (mode) mode.style.display = f === filter ? 'block' : 'none';
+    });
+    updateBtn();
   }
 
   async function loadMembers() {
@@ -214,7 +285,7 @@
     const list = document.getElementById('guest-list');
     list.innerHTML = guestEmails.map(email => `
       <div class="guest-tag">
-        <span class="guest-tag-icon">✉️</span>
+        <span style="font-size:14px;">✉️</span>
         <span class="guest-tag-email">${email}</span>
         <button class="guest-tag-remove" onclick="removeGuest('${email}')">×</button>
       </div>`).join('');
@@ -230,11 +301,17 @@
   }
 
   function updateBtn() {
+    const btn = document.getElementById('main-btn');
+    if (!isOpen) { btn.textContent = 'Confirm booking'; return; }
+
+    if (currentFilter === 'anyone') {
+      btn.textContent = 'Open session to all members' + (guestEmails.length > 0 ? ' + ' + guestEmails.length + ' guest' + (guestEmails.length > 1 ? 's' : '') : '');
+      return;
+    }
+
     const memberCount = Object.values(selected).filter(Boolean).length;
     const guestCount = guestEmails.length;
     const total = memberCount + guestCount;
-    const btn = document.getElementById('main-btn');
-    if (!isOpen) { btn.textContent = 'Confirm booking'; return; }
     if (total === 0) { btn.textContent = 'Send invites'; }
     else { btn.textContent = 'Send invites to ' + total + ' player' + (total > 1 ? 's' : ''); }
   }
@@ -260,82 +337,95 @@
 
     if (sessionError) { showError('Session save failed: ' + sessionError.message); submitted = false; btn.disabled = false; return; }
 
-    const invitedMembers = members.filter(m => selected[m.id]);
+    if (!isOpen) {
+      showConfirm('Booking confirmed. See you at ' + BAY_NAME + '!');
+      btn.textContent = 'Booked ✓';
+      return;
+    }
 
-    if (isOpen && (invitedMembers.length > 0 || guestEmails.length > 0)) {
-      document.getElementById('sending-bar').style.display = 'flex';
+    document.getElementById('sending-bar').style.display = 'flex';
 
-      // Send member invites
-      if (invitedMembers.length > 0) {
-        const inviteRows = invitedMembers.map(m => ({ session_id: sessionData.id, invited_member_id: m.id, status: 'pending' }));
-        const { data: inviteData, error: inviteError } = await db.from('invites').insert(inviteRows).select();
-        if (!inviteError && inviteData) {
-          for (let i = 0; i < invitedMembers.length; i++) {
-            const member = invitedMembers[i];
-            const invite = inviteData[i];
-            document.getElementById('sending-text').textContent = `Sending to ${member.name}...`;
-            try {
-              await fetch('/api/send-invite', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  inviteId: invite.id,
-                  memberName: member.name,
-                  memberEmail: member.email,
-                  hostName: HOST_NAME,
-                  bayName: BAY_NAME,
-                  sessionDate: dateLabel,
-                  startTime: formatTime('16:00:00'),
-                  endTime: formatTime('17:30:00'),
-                  facilityName: FACILITY_NAME
-                })
-              });
-            } catch(e) { console.error('Member email failed:', e); }
-          }
-        }
-      }
+    let invitedMembers = [];
 
-      // Send guest invites
-      for (const guestEmail of guestEmails) {
-        document.getElementById('sending-text').textContent = `Sending guest invite to ${guestEmail}...`;
-        const { data: guestData } = await db.from('guests').insert({
-          session_id: sessionData.id,
-          email: guestEmail,
-          invited_by: HOST_NAME,
-          facility_id: FACILITY_ID,
-          status: 'pending'
-        }).select().single();
+    if (currentFilter === 'anyone') {
+      invitedMembers = members;
+      document.getElementById('sending-text').textContent = 'Opening session to all members...';
+    } else {
+      invitedMembers = members.filter(m => selected[m.id]);
+    }
 
-        if (guestData) {
-          const guestAcceptUrl = `https://baybuddy.vercel.app/guest.html?guest=${guestData.id}`;
+    // Send member invites
+    if (invitedMembers.length > 0) {
+      const inviteRows = invitedMembers.map(m => ({ session_id: sessionData.id, invited_member_id: m.id, status: 'pending' }));
+      const { data: inviteData, error: inviteError } = await db.from('invites').insert(inviteRows).select();
+      if (!inviteError && inviteData) {
+        for (let i = 0; i < invitedMembers.length; i++) {
+          const member = invitedMembers[i];
+          const invite = inviteData[i];
+          document.getElementById('sending-text').textContent = `Sending to ${member.name}...`;
           try {
-            await fetch('/api/send-guest-invite', {
+            await fetch('/api/send-invite', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                guestEmail: guestEmail,
+                inviteId: invite.id,
+                memberName: member.name,
+                memberEmail: member.email,
                 hostName: HOST_NAME,
                 bayName: BAY_NAME,
                 sessionDate: dateLabel,
                 startTime: formatTime('16:00:00'),
                 endTime: formatTime('17:30:00'),
-                facilityName: FACILITY_NAME,
-                acceptUrl: guestAcceptUrl
+                facilityName: FACILITY_NAME
               })
             });
-          } catch(e) { console.error('Guest email failed:', e); }
+          } catch(e) { console.error('Member email failed:', e); }
         }
       }
-
-      document.getElementById('sending-bar').style.display = 'none';
-      const memberNames = invitedMembers.map(m => m.name).join(', ');
-      const guestNote = guestEmails.length > 0 ? ` + ${guestEmails.length} guest${guestEmails.length > 1 ? 's' : ''}` : '';
-      showConfirm(`Session is open! Invites sent to ${memberNames || ''}${guestNote}. They'll receive an email to accept or decline.`);
-      btn.textContent = 'Invites sent ✓';
-    } else {
-      showConfirm('Booking confirmed. See you at ' + BAY_NAME + '!');
-      btn.textContent = 'Booked ✓';
     }
+
+    // Send guest invites
+    for (const guestEmail of guestEmails) {
+      document.getElementById('sending-text').textContent = `Sending guest invite to ${guestEmail}...`;
+      const { data: guestData } = await db.from('guests').insert({
+        session_id: sessionData.id,
+        email: guestEmail,
+        invited_by: HOST_NAME,
+        facility_id: FACILITY_ID,
+        status: 'pending'
+      }).select().single();
+
+      if (guestData) {
+        const guestAcceptUrl = `https://baybuddy.vercel.app/guest.html?guest=${guestData.id}`;
+        try {
+          await fetch('/api/send-guest-invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              guestEmail,
+              hostName: HOST_NAME,
+              bayName: BAY_NAME,
+              sessionDate: dateLabel,
+              startTime: formatTime('16:00:00'),
+              endTime: formatTime('17:30:00'),
+              facilityName: FACILITY_NAME,
+              acceptUrl: guestAcceptUrl
+            })
+          });
+        } catch(e) { console.error('Guest email failed:', e); }
+      }
+    }
+
+    document.getElementById('sending-bar').style.display = 'none';
+
+    if (currentFilter === 'anyone') {
+      showConfirm(`Session is open to all ${invitedMembers.length} members! First ${3} to accept get in.`);
+    } else {
+      const names = invitedMembers.map(m => m.name).join(', ');
+      const guestNote = guestEmails.length > 0 ? ` + ${guestEmails.length} guest${guestEmails.length > 1 ? 's' : ''}` : '';
+      showConfirm(`Session is open! Invites sent to ${names || ''}${guestNote}. They'll receive an email to accept or decline.`);
+    }
+    btn.textContent = 'Invites sent ✓';
   }
 
   function showConfirm(msg) {
