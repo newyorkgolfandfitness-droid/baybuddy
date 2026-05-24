@@ -26,8 +26,6 @@
   .switch.on { background: #D4A800; }
   .switch-knob { width: 18px; height: 18px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; }
   .switch.on .switch-knob { transform: translateX(20px); }
-
-  /* Filter chips */
   .filter-section { margin-bottom: 20px; }
   .filter-label { font-size: 11px; font-weight: 500; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
   .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -37,22 +35,29 @@
   .chip.soon { opacity: 0.4; cursor: default; }
   .chip.soon:hover { border-color: #2a2a2a; color: #888; }
   .soon-badge { font-size: 9px; background: #2a2a2a; color: #666; border-radius: 4px; padding: 1px 4px; margin-left: 4px; vertical-align: middle; }
-
-  /* Anyone mode */
-  .anyone-notice { background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
-  .anyone-notice-text { font-size: 13px; color: #D4A800; line-height: 1.5; }
-
+  .notice-box { border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
+  .notice-box.gold { background: #1f1f00; border: 0.5px solid #3a3000; }
+  .notice-box.blue { background: #001f3f; border: 0.5px solid #003a7a; }
+  .notice-text { font-size: 13px; color: #D4A800; line-height: 1.5; }
+  .notice-text.blue { color: #60a5fa; }
   .invite-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
   .invite-hint { font-size: 12px; color: #555; margin-bottom: 14px; }
   .member-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid #222; cursor: pointer; }
   .member-row:last-child { border-bottom: none; padding-bottom: 0; }
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #888; flex-shrink: 0; transition: all 0.15s; }
   .avatar.selected { background: #3a2e00; color: #D4A800; }
+  .avatar.circle { background: #001f3f; color: #60a5fa; }
   .member-info { flex: 1; }
   .member-name { font-size: 14px; color: #ccc; }
   .member-hcp { font-size: 12px; color: #555; }
   .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 12px; }
   .checkbox.checked { background: #D4A800; border-color: #D4A800; color: #111; }
+  .circle-toggle { width: 18px; height: 18px; border-radius: 50%; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; cursor: pointer; }
+  .circle-toggle.in-circle { background: #60a5fa; border-color: #60a5fa; color: #111; }
+  .circle-manage-btn { display: flex; align-items: center; gap: 6px; background: none; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 8px 14px; font-size: 12px; color: #888; cursor: pointer; margin-bottom: 16px; }
+  .circle-manage-btn:hover { border-color: #60a5fa; color: #60a5fa; }
+  .circle-empty { text-align: center; padding: 20px; font-size: 13px; color: #555; }
+  .circle-empty-btn { display: inline-block; margin-top: 10px; padding: 8px 16px; background: none; border: 0.5px solid #D4A800; border-radius: 8px; font-size: 12px; color: #D4A800; cursor: pointer; }
   .guest-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
   .guest-title { font-size: 13px; font-weight: 500; color: #e8e8e8; margin-bottom: 4px; }
   .guest-sub { font-size: 12px; color: #555; margin-bottom: 16px; }
@@ -62,7 +67,6 @@
   .guest-input::placeholder { color: #444; }
   .add-guest-btn { background: none; border: 0.5px solid #D4A800; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #D4A800; cursor: pointer; white-space: nowrap; }
   .add-guest-btn:hover { background: #1f1f00; }
-  .guest-list { margin-top: 12px; }
   .guest-tag { display: flex; align-items: center; gap: 8px; background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
   .guest-tag-email { font-size: 13px; color: #D4A800; flex: 1; }
   .guest-tag-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 16px; padding: 0; line-height: 1; }
@@ -80,6 +84,10 @@
   .sending-text { font-size: 13px; color: #666; }
   .divider { height: 0.5px; background: #2a2a2a; margin-bottom: 20px; }
   .footer { text-align: center; margin-top: 16px; font-size: 11px; color: #333; }
+  .manage-mode-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .manage-mode-title { font-size: 13px; font-weight: 600; color: #e8e8e8; }
+  .manage-mode-close { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; padding: 0; }
+  .manage-mode-close:hover { color: #e8e8e8; }
 </style>
 </head>
 <body>
@@ -110,20 +118,18 @@
     </div>
 
     <div id="open-section" style="display:none;">
-
-      <!-- Filter chips -->
       <div class="filter-section">
         <div class="filter-label">Who can join?</div>
         <div class="filter-chips">
           <div class="chip active" id="chip-specific" onclick="setFilter('specific')">Specific People</div>
           <div class="chip" id="chip-anyone" onclick="setFilter('anyone')">Anyone</div>
-          <div class="chip soon" id="chip-circle" onclick="setFilter('circle')">My Circle <span class="soon-badge">Soon</span></div>
-          <div class="chip soon" id="chip-handicap" onclick="setFilter('handicap')">Similar Handicap <span class="soon-badge">Soon</span></div>
-          <div class="chip soon" id="chip-played" onclick="setFilter('played')">Played Before <span class="soon-badge">Soon</span></div>
+          <div class="chip" id="chip-circle" onclick="setFilter('circle')">My Circle</div>
+          <div class="chip soon" id="chip-handicap">Similar Handicap <span class="soon-badge">Soon</span></div>
+          <div class="chip soon" id="chip-played">Played Before <span class="soon-badge">Soon</span></div>
         </div>
       </div>
 
-      <!-- Specific people mode -->
+      <!-- Specific People -->
       <div id="mode-specific">
         <div class="section-label">Invite members</div>
         <div class="invite-panel" id="invite-panel">
@@ -132,33 +138,55 @@
         </div>
       </div>
 
-      <!-- Anyone mode -->
+      <!-- Anyone -->
       <div id="mode-anyone" style="display:none;">
-        <div class="anyone-notice">
-          <div class="anyone-notice-text">🏌️ <strong>Open to everyone</strong> — all facility members will receive an invite and can join your session on a first-come, first-served basis until the bay is full.</div>
+        <div class="notice-box gold">
+          <div class="notice-text">🏌️ <strong>Open to everyone</strong> — all facility members will receive an invite and can join on a first-come, first-served basis until the bay is full.</div>
+        </div>
+      </div>
+
+      <!-- My Circle -->
+      <div id="mode-circle" style="display:none;">
+        <div id="circle-invite-view">
+          <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span>My Circle</span>
+            <button class="circle-manage-btn" onclick="showManageCircle()">⚙ Manage Circle</button>
+          </div>
+          <div class="invite-panel" id="circle-list">
+            <div class="circle-empty" id="circle-empty">
+              <div>Your circle is empty</div>
+              <button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manage circle overlay -->
+        <div id="circle-manage-view" style="display:none;">
+          <div class="invite-panel">
+            <div class="manage-mode-header">
+              <div class="manage-mode-title">👥 Manage My Circle</div>
+              <button class="manage-mode-close" onclick="hideManageCircle()">✕</button>
+            </div>
+            <div style="font-size:12px;color:#555;margin-bottom:14px;">Tap the circle icon to add or remove members from your circle.</div>
+            <div id="manage-member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading...</div></div>
+          </div>
         </div>
       </div>
 
       <!-- Coming soon modes -->
-      <div id="mode-circle" style="display:none;">
-        <div class="anyone-notice">
-          <div class="anyone-notice-text">👥 <strong>My Circle</strong> — invite your saved group of regular playing partners. Coming soon!</div>
-        </div>
-      </div>
       <div id="mode-handicap" style="display:none;">
-        <div class="anyone-notice">
-          <div class="anyone-notice-text">⛳ <strong>Similar Handicap</strong> — automatically invite members within 4 strokes of your handicap. Coming soon!</div>
+        <div class="notice-box gold">
+          <div class="notice-text">⛳ <strong>Similar Handicap</strong> — automatically invite members within 4 strokes of your handicap. Coming soon!</div>
         </div>
       </div>
       <div id="mode-played" style="display:none;">
-        <div class="anyone-notice">
-          <div class="anyone-notice-text">🔄 <strong>Played Before</strong> — invite members you've shared a session with previously. Coming soon!</div>
+        <div class="notice-box gold">
+          <div class="notice-text">🔄 <strong>Played Before</strong> — invite members you've shared a session with previously. Coming soon!</div>
         </div>
       </div>
 
       <div class="divider"></div>
 
-      <!-- Guest invite — always visible -->
       <div class="section-label">Invite a guest</div>
       <div class="guest-panel">
         <div class="guest-title">Not a member yet?</div>
@@ -167,9 +195,8 @@
           <input class="guest-input" id="guest-email-input" type="email" placeholder="Guest email address">
           <button class="add-guest-btn" onclick="addGuest()">+ Add</button>
         </div>
-        <div class="guest-list" id="guest-list"></div>
+        <div id="guest-list"></div>
       </div>
-
     </div>
 
     <div class="sending-bar" id="sending-bar">
@@ -196,6 +223,7 @@
   const FACILITY_NAME = 'New York Golf & Fitness';
   const HOST_NAME = 'Mike';
   const BAY_NAME = 'Empire Bay';
+  const HOST_MEMBER_ID = null; // will be dynamic later
 
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -203,6 +231,7 @@
   let currentFilter = 'specific';
   let members = [];
   let selected = {};
+  let circleIds = new Set();
   let guestEmails = [];
   let submitted = false;
 
@@ -217,27 +246,23 @@
     return (hr % 12 || 12) + ':' + m + ' ' + (hr >= 12 ? 'PM' : 'AM');
   }
 
-  function setFilter(filter) {
-    const soon = ['circle', 'handicap', 'played'];
-    if (soon.includes(filter)) return;
-
-    currentFilter = filter;
-    ['specific','anyone','circle','handicap','played'].forEach(f => {
-      document.getElementById('chip-' + f).className = 'chip' + (soon.includes(f) ? ' soon' : '') + (f === filter ? ' active' : '');
-      const mode = document.getElementById('mode-' + f);
-      if (mode) mode.style.display = f === filter ? 'block' : 'none';
-    });
-    updateBtn();
+  function getInitials(name) {
+    return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
   }
 
   async function loadMembers() {
     const { data, error } = await db.from('members').select('*').eq('facility_id', FACILITY_ID).neq('name', HOST_NAME);
     if (error) { document.getElementById('member-list').innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load members</div>'; return; }
     members = data;
+    renderMemberList();
+    await loadCircle();
+  }
+
+  function renderMemberList() {
     const list = document.getElementById('member-list');
     if (!members.length) { list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
     list.innerHTML = members.map(m => {
-      const initials = m.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      const initials = getInitials(m.name);
       return `<div class="member-row" onclick="toggleMember('${m.id}')">
         <div class="avatar" id="av-${m.id}">${initials}</div>
         <div class="member-info">
@@ -247,6 +272,103 @@
         <div class="checkbox" id="cb-${m.id}"></div>
       </div>`;
     }).join('');
+  }
+
+  async function loadCircle() {
+    // For demo, using Mike's member ID — will be dynamic later
+    const mikeMember = members.find(m => false); // placeholder
+    // Load from local storage for now as a demo
+    const saved = localStorage.getItem('baybuddy_circle_' + FACILITY_ID);
+    if (saved) {
+      circleIds = new Set(JSON.parse(saved));
+    }
+    renderCircleList();
+  }
+
+  async function toggleCircleMember(memberId) {
+    if (circleIds.has(memberId)) {
+      circleIds.delete(memberId);
+    } else {
+      circleIds.add(memberId);
+    }
+    localStorage.setItem('baybuddy_circle_' + FACILITY_ID, JSON.stringify([...circleIds]));
+    renderCircleList();
+    renderManageList();
+    updateBtn();
+  }
+
+  function renderCircleList() {
+    const container = document.getElementById('circle-list');
+    const empty = document.getElementById('circle-empty');
+    const circleMembers = members.filter(m => circleIds.has(m.id));
+
+    if (circleMembers.length === 0) {
+      container.innerHTML = `<div class="circle-empty" id="circle-empty">
+        <div>Your circle is empty</div>
+        <button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button>
+      </div>`;
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="font-size:12px;color:#555;margin-bottom:14px;">Your ${circleMembers.length} regular playing partner${circleMembers.length > 1 ? 's' : ''} — all will be invited</div>
+      ${circleMembers.map(m => `
+        <div class="member-row">
+          <div class="avatar circle">${getInitials(m.name)}</div>
+          <div class="member-info">
+            <div class="member-name">${m.name}</div>
+            <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
+          </div>
+          <div style="font-size:11px;color:#60a5fa;">In circle ✓</div>
+        </div>`).join('')}
+      <button style="margin-top:12px;background:none;border:none;font-size:12px;color:#555;cursor:pointer;padding:0;" onclick="showManageCircle()">⚙ Edit circle</button>`;
+  }
+
+  function renderManageList() {
+    const list = document.getElementById('manage-member-list');
+    if (!members.length) { list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
+    list.innerHTML = members.map(m => {
+      const inCircle = circleIds.has(m.id);
+      return `<div class="member-row">
+        <div class="avatar ${inCircle ? 'circle' : ''}">${getInitials(m.name)}</div>
+        <div class="member-info">
+          <div class="member-name">${m.name}</div>
+          <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
+        </div>
+        <div class="circle-toggle ${inCircle ? 'in-circle' : ''}" onclick="toggleCircleMember('${m.id}')" title="${inCircle ? 'Remove from circle' : 'Add to circle'}">
+          ${inCircle ? '✓' : '+'}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function showManageCircle() {
+    document.getElementById('circle-invite-view').style.display = 'none';
+    document.getElementById('circle-manage-view').style.display = 'block';
+    renderManageList();
+  }
+
+  function hideManageCircle() {
+    document.getElementById('circle-manage-view').style.display = 'none';
+    document.getElementById('circle-invite-view').style.display = 'block';
+    renderCircleList();
+    updateBtn();
+  }
+
+  function setFilter(filter) {
+    const soon = ['handicap', 'played'];
+    if (soon.includes(filter)) return;
+
+    currentFilter = filter;
+    ['specific','anyone','circle','handicap','played'].forEach(f => {
+      const chip = document.getElementById('chip-' + f);
+      if (chip) {
+        chip.className = 'chip' + (soon.includes(f) ? ' soon' : '') + (f === filter ? ' active' : '');
+      }
+      const mode = document.getElementById('mode-' + f);
+      if (mode) mode.style.display = f === filter ? 'block' : 'none';
+    });
+    updateBtn();
   }
 
   function toggleMember(id) {
@@ -305,15 +427,23 @@
     if (!isOpen) { btn.textContent = 'Confirm booking'; return; }
 
     if (currentFilter === 'anyone') {
-      btn.textContent = 'Open session to all members' + (guestEmails.length > 0 ? ' + ' + guestEmails.length + ' guest' + (guestEmails.length > 1 ? 's' : '') : '');
+      const g = guestEmails.length;
+      btn.textContent = 'Open session to all members' + (g > 0 ? ' + ' + g + ' guest' + (g > 1 ? 's' : '') : '');
+      return;
+    }
+
+    if (currentFilter === 'circle') {
+      const circleCount = [...circleIds].length;
+      const g = guestEmails.length;
+      if (circleCount === 0) { btn.textContent = 'Send invites'; return; }
+      btn.textContent = 'Invite my circle (' + circleCount + ' player' + (circleCount > 1 ? 's' : '') + ')' + (g > 0 ? ' + ' + g + ' guest' + (g > 1 ? 's' : '') : '');
       return;
     }
 
     const memberCount = Object.values(selected).filter(Boolean).length;
-    const guestCount = guestEmails.length;
-    const total = memberCount + guestCount;
-    if (total === 0) { btn.textContent = 'Send invites'; }
-    else { btn.textContent = 'Send invites to ' + total + ' player' + (total > 1 ? 's' : ''); }
+    const g = guestEmails.length;
+    const total = memberCount + g;
+    btn.textContent = total === 0 ? 'Send invites' : 'Send invites to ' + total + ' player' + (total > 1 ? 's' : '');
   }
 
   async function handleSubmit() {
@@ -346,15 +476,16 @@
     document.getElementById('sending-bar').style.display = 'flex';
 
     let invitedMembers = [];
-
     if (currentFilter === 'anyone') {
       invitedMembers = members;
       document.getElementById('sending-text').textContent = 'Opening session to all members...';
+    } else if (currentFilter === 'circle') {
+      invitedMembers = members.filter(m => circleIds.has(m.id));
+      document.getElementById('sending-text').textContent = 'Inviting your circle...';
     } else {
       invitedMembers = members.filter(m => selected[m.id]);
     }
 
-    // Send member invites
     if (invitedMembers.length > 0) {
       const inviteRows = invitedMembers.map(m => ({ session_id: sessionData.id, invited_member_id: m.id, status: 'pending' }));
       const { data: inviteData, error: inviteError } = await db.from('invites').insert(inviteRows).select();
@@ -384,7 +515,6 @@
       }
     }
 
-    // Send guest invites
     for (const guestEmail of guestEmails) {
       document.getElementById('sending-text').textContent = `Sending guest invite to ${guestEmail}...`;
       const { data: guestData } = await db.from('guests').insert({
@@ -396,7 +526,6 @@
       }).select().single();
 
       if (guestData) {
-        const guestAcceptUrl = `https://baybuddy.vercel.app/guest.html?guest=${guestData.id}`;
         try {
           await fetch('/api/send-guest-invite', {
             method: 'POST',
@@ -409,7 +538,7 @@
               startTime: formatTime('16:00:00'),
               endTime: formatTime('17:30:00'),
               facilityName: FACILITY_NAME,
-              acceptUrl: guestAcceptUrl
+              acceptUrl: `https://baybuddy.vercel.app/guest.html?guest=${guestData.id}`
             })
           });
         } catch(e) { console.error('Guest email failed:', e); }
@@ -419,11 +548,13 @@
     document.getElementById('sending-bar').style.display = 'none';
 
     if (currentFilter === 'anyone') {
-      showConfirm(`Session is open to all ${invitedMembers.length} members! First ${3} to accept get in.`);
+      showConfirm(`Session is open to all ${invitedMembers.length} members! First 3 to accept get in.`);
+    } else if (currentFilter === 'circle') {
+      showConfirm(`Your circle of ${invitedMembers.length} has been invited! They'll get an email now.`);
     } else {
       const names = invitedMembers.map(m => m.name).join(', ');
       const guestNote = guestEmails.length > 0 ? ` + ${guestEmails.length} guest${guestEmails.length > 1 ? 's' : ''}` : '';
-      showConfirm(`Session is open! Invites sent to ${names || ''}${guestNote}. They'll receive an email to accept or decline.`);
+      showConfirm(`Session is open! Invites sent to ${names || ''}${guestNote}.`);
     }
     btn.textContent = 'Invites sent ✓';
   }
