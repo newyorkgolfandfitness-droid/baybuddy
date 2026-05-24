@@ -125,7 +125,7 @@
           <div class="chip" id="chip-anyone" onclick="setFilter('anyone')">Anyone</div>
           <div class="chip" id="chip-circle" onclick="setFilter('circle')">My Circle</div>
           <div class="chip" id="chip-handicap" onclick="setFilter('handicap')">Similar Handicap</div>
-          <div class="chip soon" id="chip-played">Played Before <span class="soon-badge">Soon</span></div>
+          <div class="chip" id="chip-played" onclick="setFilter('played')">Played Before</div>
         </div>
       </div>
 
@@ -183,8 +183,11 @@
         </div>
       </div>
       <div id="mode-played" style="display:none;">
-        <div class="notice-box gold">
-          <div class="notice-text">🔄 <strong>Played Before</strong> — invite members you've shared a session with previously. Coming soon!</div>
+        <div class="notice-box gold" style="margin-bottom:12px;">
+          <div class="notice-text">🔄 Members you've played with before — based on your session history.</div>
+        </div>
+        <div class="invite-panel" id="played-list">
+          <div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading session history...</div>
         </div>
       </div>
 
@@ -358,21 +361,19 @@
     updateBtn();
   }
 
-  function setFilter(filter) {
-    const soon = ['played'];
-    if (soon.includes(filter)) return;
+  const HOST_MEMBER_ID = 'f1916fea-5397-4155-b121-1bd493d020b6';
 
+  function setFilter(filter) {
+    const soon = [];
     currentFilter = filter;
     ['specific','anyone','circle','handicap','played'].forEach(f => {
       const chip = document.getElementById('chip-' + f);
-      if (chip) {
-        chip.className = 'chip' + (soon.includes(f) ? ' soon' : '') + (f === filter ? ' active' : '');
-      }
+      if (chip) chip.className = 'chip' + (f === filter ? ' active' : '');
       const mode = document.getElementById('mode-' + f);
       if (mode) mode.style.display = f === filter ? 'block' : 'none';
     });
-
     if (filter === 'handicap') renderHandicapList();
+    if (filter === 'played') renderPlayedList();
     updateBtn();
   }
 
@@ -439,7 +440,50 @@
       </div>`).join('');
   }
 
-  function toggleOpen() {
+  async function renderPlayedList() {
+    const list = document.getElementById('played-list');
+    list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading session history...</div>';
+
+    // Find sessions hosted by Mike
+    const { data: hostedSessions } = await db.from('sessions').select('id').eq('facility_id', FACILITY_ID);
+    if (!hostedSessions || hostedSessions.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No session history yet — play some rounds first!</div>';
+      return;
+    }
+
+    const sessionIds = hostedSessions.map(s => s.id);
+
+    // Find members who accepted invites in those sessions
+    const { data: acceptedInvites } = await db.from('invites')
+      .select('invited_member_id')
+      .in('session_id', sessionIds)
+      .eq('status', 'accepted');
+
+    if (!acceptedInvites || acceptedInvites.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No one has joined your sessions yet.</div>';
+      return;
+    }
+
+    // Get unique member IDs
+    const playedMemberIds = [...new Set(acceptedInvites.map(i => i.invited_member_id))];
+    const playedMembers = members.filter(m => playedMemberIds.includes(m.id));
+
+    if (!playedMembers.length) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No previous playing partners found.</div>';
+      return;
+    }
+
+    list.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${playedMembers.length} member${playedMembers.length > 1 ? 's' : ''} you've played with — all will be invited</div>` +
+      playedMembers.map(m => `
+        <div class="member-row">
+          <div class="avatar selected">${getInitials(m.name)}</div>
+          <div class="member-info">
+            <div class="member-name">${m.name}</div>
+            <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
+          </div>
+          <div style="font-size:11px;color:#D4A800;">Played before ✓</div>
+        </div>`).join('');
+  }
     if (submitted) return;
     isOpen = !isOpen;
     document.getElementById('switch').className = 'switch' + (isOpen ? ' on' : '');
@@ -475,7 +519,10 @@
       return;
     }
 
-    const memberCount = Object.values(selected).filter(Boolean).length;
+    if (currentFilter === 'played') {
+      btn.textContent = 'Invite previous playing partners';
+      return;
+    }
     const g = guestEmails.length;
     const total = memberCount + g;
     btn.textContent = total === 0 ? 'Send invites' : 'Send invites to ' + total + ' player' + (total > 1 ? 's' : '');
@@ -522,6 +569,17 @@
       const RANGE = 5;
       invitedMembers = members.filter(m => m.handicap != null && Math.abs(m.handicap - HOST_HANDICAP) <= RANGE);
       document.getElementById('sending-text').textContent = 'Inviting matched players...';
+    } else if (currentFilter === 'played') {
+      const { data: hostedSessions } = await db.from('sessions').select('id').eq('facility_id', FACILITY_ID);
+      if (hostedSessions && hostedSessions.length > 0) {
+        const sessionIds = hostedSessions.map(s => s.id);
+        const { data: acceptedInvites } = await db.from('invites').select('invited_member_id').in('session_id', sessionIds).eq('status', 'accepted');
+        if (acceptedInvites) {
+          const playedIds = [...new Set(acceptedInvites.map(i => i.invited_member_id))];
+          invitedMembers = members.filter(m => playedIds.includes(m.id));
+        }
+      }
+      document.getElementById('sending-text').textContent = 'Inviting previous playing partners...';
     } else {
       invitedMembers = members.filter(m => selected[m.id]);
     }
@@ -593,6 +651,8 @@
       showConfirm(`Your circle of ${invitedMembers.length} has been invited! They'll get an email now.`);
     } else if (currentFilter === 'handicap') {
       showConfirm(`Invites sent to ${invitedMembers.length} players within ±5 strokes of your handicap!`);
+    } else if (currentFilter === 'played') {
+      showConfirm(`Invites sent to ${invitedMembers.length} player${invitedMembers.length > 1 ? 's' : ''} you've played with before!`);
     } else {
       const names = invitedMembers.map(m => m.name).join(', ');
       const guestNote = guestEmails.length > 0 ? ` + ${guestEmails.length} guest${guestEmails.length > 1 ? 's' : ''}` : '';
