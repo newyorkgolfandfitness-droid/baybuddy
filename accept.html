@@ -48,12 +48,12 @@
   .result-sub { font-size: 13px; color: #666; line-height: 1.5; }
   .result-sub.green { color: #4ade80; }
   .result-sub.gold { color: #D4A800; }
+  .book-btn { display: block; margin-top: 14px; padding: 14px; background: #D4A800; border-radius: 10px; color: #111; font-size: 15px; font-weight: 600; text-decoration: none; text-align: center; }
   .loading-state { text-align: center; padding: 40px 20px; }
   .loading-spinner { width: 32px; height: 32px; border: 2px solid #222; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { font-size: 14px; color: #555; }
   .error-state { text-align: center; padding: 40px 20px; }
-  .error-icon { font-size: 32px; margin-bottom: 12px; }
   .error-text { font-size: 14px; color: #f87171; }
   .footer { text-align: center; padding: 0 0 20px; font-size: 11px; color: #2a2a2a; }
   .footer span { color: #3a3a3a; }
@@ -63,8 +63,8 @@
 <div class="card">
   <div class="card-header">
     <div class="facility-name" id="facility-name">Loading...</div>
-    <div class="invite-title" id="header-title">You're invited!</div>
-    <div class="invite-sub" id="header-sub">Someone wants you to join their session</div>
+    <div class="invite-title">You're invited!</div>
+    <div class="invite-sub">Someone wants you to join their session</div>
   </div>
   <div class="card-body">
     <div id="loading-state" class="loading-state">
@@ -105,7 +105,7 @@
       </div>
     </div>
     <div id="error-state" class="error-state" style="display:none;">
-      <div class="error-icon">⚠️</div>
+      <div style="font-size:32px;margin-bottom:12px;">⚠️</div>
       <div class="error-text" id="error-text">This invite could not be found.</div>
     </div>
   </div>
@@ -138,22 +138,25 @@
     return (hour % 12 || 12) + ':' + m + ' ' + (hour >= 12 ? 'PM' : 'AM');
   }
 
-  function updateCapacityDisplay(acceptedCount) {
-    const text = document.getElementById('capacity-text');
+  function updateCapacityDisplay(count) {
+    document.getElementById('capacity-text').textContent = count + ' of ' + MAX_PLAYERS + ' players';
     const dots = document.getElementById('capacity-dots');
-    text.textContent = acceptedCount + ' of ' + MAX_PLAYERS + ' players';
     dots.innerHTML = '';
     for (let i = 0; i < MAX_PLAYERS; i++) {
       const dot = document.createElement('div');
-      dot.className = 'dot ' + (i < acceptedCount ? 'filled' : 'empty');
+      dot.className = 'dot ' + (i < count ? 'filled' : 'empty');
       dots.appendChild(dot);
     }
   }
 
-  async function getAcceptedCount(sessionId) {
-    const { data, error } = await db.from('invites').select('id').eq('session_id', sessionId).eq('status', 'accepted');
-    if (error) return 0;
-    return (data ? data.length : 0) + 1;
+  async function getTotalAccepted(sessionId) {
+    const [membersRes, guestsRes] = await Promise.all([
+      db.from('invites').select('id').eq('session_id', sessionId).eq('status', 'accepted'),
+      db.from('guests').select('id').eq('session_id', sessionId).eq('status', 'accepted')
+    ]);
+    const memberCount = membersRes.data ? membersRes.data.length : 0;
+    const guestCount = guestsRes.data ? guestsRes.data.length : 0;
+    return memberCount + guestCount + 1; // +1 for host
   }
 
   async function loadInvite() {
@@ -165,8 +168,7 @@
 
     inviteData = invite;
     const session = invite.sessions;
-    const member = invite.members;
-    const acceptedCount = await getAcceptedCount(session.id);
+    const totalAccepted = await getTotalAccepted(session.id);
 
     document.getElementById('facility-name').textContent = FACILITY_NAME;
     document.getElementById('host-name').textContent = HOST_NAME;
@@ -175,20 +177,20 @@
     document.getElementById('session-date').textContent = formatDate(session.session_date);
     document.getElementById('start-time').textContent = formatTime(session.start_time);
     document.getElementById('end-time').textContent = formatTime(session.end_time);
-    updateCapacityDisplay(acceptedCount);
+    updateCapacityDisplay(totalAccepted);
 
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
 
     if (invite.status !== 'pending') {
-      showResult(invite.status, member.name);
+      showResult(invite.status);
       document.getElementById('btn-group').style.display = 'none';
       document.getElementById('action-label').style.display = 'none';
       return;
     }
 
-    if (acceptedCount >= MAX_PLAYERS) {
-      showResult('full', member.name);
+    if (totalAccepted >= MAX_PLAYERS) {
+      showResult('full');
       document.getElementById('btn-group').style.display = 'none';
       document.getElementById('action-label').style.display = 'none';
     }
@@ -202,16 +204,16 @@
     const member = inviteData.members;
 
     if (status === 'accepted') {
-      const acceptedCount = await getAcceptedCount(session.id);
-      if (acceptedCount >= MAX_PLAYERS) {
-        showResult('full', member.name);
+      const totalAccepted = await getTotalAccepted(session.id);
+      if (totalAccepted >= MAX_PLAYERS) {
+        showResult('full');
         document.getElementById('btn-group').style.display = 'none';
         document.getElementById('action-label').style.display = 'none';
         return;
       }
     }
 
-    const { error } = await db.from('invites').update({ status: status }).eq('id', inviteId);
+    const { error } = await db.from('invites').update({ status }).eq('id', inviteId);
     if (error) {
       document.getElementById('btn-accept').disabled = false;
       document.getElementById('btn-decline').disabled = false;
@@ -219,8 +221,8 @@
       return;
     }
 
-    const newAcceptedCount = await getAcceptedCount(session.id);
-    updateCapacityDisplay(newAcceptedCount);
+    const newTotal = await getTotalAccepted(session.id);
+    updateCapacityDisplay(newTotal);
 
     const dateLabel = formatDate(session.session_date);
     const timeLabel = formatTime(session.start_time);
@@ -234,14 +236,14 @@
         bayName: session.bay_name,
         sessionDate: dateLabel,
         startTime: timeLabel,
-        status: status,
+        status,
         facilityName: FACILITY_NAME,
-        currentCount: newAcceptedCount,
+        currentCount: newTotal,
         maxPlayers: MAX_PLAYERS
       })
     });
 
-    if (status === 'accepted' && newAcceptedCount >= MAX_PLAYERS) {
+    if (status === 'accepted' && newTotal >= MAX_PLAYERS) {
       const { data: pendingInvites } = await db.from('invites').select('*, members(*)').eq('session_id', session.id).eq('status', 'pending');
       if (pendingInvites && pendingInvites.length > 0) {
         for (const pending of pendingInvites) {
@@ -263,14 +265,35 @@
           }
         }
       }
+      const { data: pendingGuests } = await db.from('guests').select('*').eq('session_id', session.id).eq('status', 'pending');
+      if (pendingGuests && pendingGuests.length > 0) {
+        for (const guest of pendingGuests) {
+          await db.from('guests').update({ status: 'expired' }).eq('id', guest.id);
+          if (guest.email) {
+            await fetch('/api/session-full', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                memberEmail: guest.email,
+                memberName: guest.full_name || 'Guest',
+                hostName: HOST_NAME,
+                bayName: session.bay_name,
+                sessionDate: dateLabel,
+                startTime: timeLabel,
+                facilityName: FACILITY_NAME
+              })
+            });
+          }
+        }
+      }
     }
 
     document.getElementById('btn-group').style.display = 'none';
     document.getElementById('action-label').style.display = 'none';
-    showResult(status, member.name);
+    showResult(status);
   }
 
-  function showResult(status, memberName) {
+  function showResult(status) {
     const card = document.getElementById('result-card');
     const icon = document.getElementById('result-icon');
     const title = document.getElementById('result-title');
@@ -287,14 +310,25 @@
       card.className = 'result-card full';
       icon.textContent = '⛔';
       title.textContent = "Session is full";
-      sub.textContent = "Sorry, this session has reached capacity. You can still book your own bay!";
+      sub.textContent = "This session has reached capacity — but you can still grab your own bay and play alongside them!";
       sub.className = 'result-sub gold';
+      const bookBtn = document.createElement('a');
+      bookBtn.href = 'https://www.newyorkgolfandfitness.com/';
+      bookBtn.textContent = 'Book your own bay →';
+      bookBtn.className = 'book-btn';
+      bookBtn.style.cssText = 'display:block;margin-top:14px;padding:14px;background:#D4A800;border-radius:10px;color:#111;font-size:15px;font-weight:600;text-decoration:none;text-align:center;';
+      card.appendChild(bookBtn);
     } else {
       card.className = 'result-card declined';
       icon.textContent = '👋';
       title.textContent = "Maybe next time";
-      sub.textContent = "You've declined this invite.";
+      sub.textContent = "You've declined this invite. Hope to see you on the simulator soon!";
       sub.className = 'result-sub';
+      const bookBtn = document.createElement('a');
+      bookBtn.href = 'https://www.newyorkgolfandfitness.com/';
+      bookBtn.textContent = 'Book your own session →';
+      bookBtn.style.cssText = 'display:block;margin-top:14px;padding:14px;background:#1a1a1a;border-radius:10px;color:#888;font-size:15px;font-weight:600;text-decoration:none;text-align:center;border:0.5px solid #2a2a2a;';
+      card.appendChild(bookBtn);
     }
   }
 
