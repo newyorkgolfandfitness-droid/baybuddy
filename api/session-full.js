@@ -14,8 +14,8 @@ export default async function handler(req, res) {
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#111;border-radius:16px;overflow:hidden;border:1px solid #222;">
       <tr><td style="background:#1a1a1a;padding:24px;text-align:center;border-bottom:1px solid #2a2a2a;">
         <p style="margin:0 0 6px;font-size:12px;color:#D4A800;text-transform:uppercase;letter-spacing:1px;">${facilityName}</p>
-        <h1 style="margin:0 0 6px;font-size:22px;font-weight:600;color:#fff;">Session is full</h1>
-        <p style="margin:0;font-size:14px;color:#666;">Sorry ${memberName}, this session has reached capacity</p>
+        <h1 style="margin:0 0 6px;font-size:22px;font-weight:600;color:#fff;">That session filled up! 🔥</h1>
+        <p style="margin:0;font-size:14px;color:#666;">Hey ${memberName} — ${hostName}'s session just reached capacity</p>
       </td></tr>
       <tr><td style="padding:24px;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background:#1a1a1a;border-radius:12px;margin-bottom:20px;border:1px solid #2a2a2a;">
@@ -37,9 +37,15 @@ export default async function handler(req, res) {
             </td>
           </tr>
         </table>
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#2a1a00;border-radius:10px;margin-bottom:16px;border:1px solid #5a3a00;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#2a1a00;border-radius:10px;margin-bottom:20px;border:1px solid #5a3a00;">
           <tr><td style="padding:14px 18px;">
-            <p style="margin:0;font-size:13px;color:#D4A800;line-height:1.5;">This session with ${hostName} at ${bayName} is now full. You can still book your own simulator session at ${facilityName}.</p>
+            <p style="margin:0;font-size:15px;font-weight:700;color:#D4A800;margin-bottom:6px;">Dang, that session filled up fast! 🔥</p>
+            <p style="margin:0;font-size:13px;color:#D4A800;line-height:1.5;">The good news? You can still grab a bay right next to them and make it a party. Book your own sim and keep the round going!</p>
+          </td></tr>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+          <tr><td align="center" style="background:#D4A800;border-radius:10px;">
+            <a href="https://www.newyorkgolfandfitness.com/" style="display:block;padding:14px;font-size:15px;font-weight:600;color:#111;text-decoration:none;text-align:center;">Grab the bay next door →</a>
           </td></tr>
         </table>
         <p style="margin:0;font-size:12px;color:#444;text-align:center;">This notification was sent to ${memberEmail}</p>
