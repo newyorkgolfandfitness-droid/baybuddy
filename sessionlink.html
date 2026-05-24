@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SessionLink</title>
+<title>BayBuddy</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +26,7 @@
   .switch.on { background: #D4A800; }
   .switch-knob { width: 18px; height: 18px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; }
   .switch.on .switch-knob { transform: translateX(20px); }
-  .invite-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: none; }
+  .invite-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; display: none; }
   .invite-hint { font-size: 12px; color: #555; margin-bottom: 14px; }
   .member-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid #222; cursor: pointer; }
   .member-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -37,6 +37,21 @@
   .member-hcp { font-size: 12px; color: #555; }
   .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 12px; }
   .checkbox.checked { background: #D4A800; border-color: #D4A800; color: #111; }
+  .guest-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: none; }
+  .guest-title { font-size: 13px; font-weight: 500; color: #e8e8e8; margin-bottom: 4px; }
+  .guest-sub { font-size: 12px; color: #555; margin-bottom: 16px; }
+  .guest-input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .guest-input { flex: 1; background: #111; border: 0.5px solid #333; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #e8e8e8; outline: none; }
+  .guest-input:focus { border-color: #D4A800; }
+  .guest-input::placeholder { color: #444; }
+  .add-guest-btn { background: none; border: 0.5px solid #D4A800; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #D4A800; cursor: pointer; white-space: nowrap; }
+  .add-guest-btn:hover { background: #1f1f00; }
+  .guest-list { margin-top: 12px; }
+  .guest-tag { display: flex; align-items: center; gap: 8px; background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
+  .guest-tag-icon { font-size: 14px; }
+  .guest-tag-email { font-size: 13px; color: #D4A800; flex: 1; }
+  .guest-tag-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 16px; padding: 0; line-height: 1; }
+  .guest-tag-remove:hover { color: #f87171; }
   .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #D4A800; color: #111; }
   .btn:hover { background: #e8b800; }
   .btn:disabled { background: #2a2a2a; color: #444; cursor: default; }
@@ -48,6 +63,7 @@
   .spinner { width: 16px; height: 16px; border: 2px solid #333; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .sending-text { font-size: 13px; color: #666; }
+  .divider { height: 0.5px; background: #2a2a2a; margin-bottom: 20px; }
   .footer { text-align: center; margin-top: 16px; font-size: 11px; color: #333; }
 </style>
 </head>
@@ -78,9 +94,25 @@
       <div class="switch" id="switch"><div class="switch-knob"></div></div>
     </div>
 
-    <div class="invite-panel" id="invite-panel">
-      <div class="invite-hint">Select members to invite</div>
-      <div id="member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading members...</div></div>
+    <div id="open-section" style="display:none;">
+      <div class="section-label">Invite members</div>
+      <div class="invite-panel" id="invite-panel" style="display:block;">
+        <div class="invite-hint">Select members from your facility</div>
+        <div id="member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading members...</div></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">Invite a guest</div>
+      <div class="guest-panel" id="guest-panel" style="display:block;">
+        <div class="guest-title">Not a member yet?</div>
+        <div class="guest-sub">Enter their email to send them a guest invite. $25/hr fee collected at the facility.</div>
+        <div class="guest-input-row">
+          <input class="guest-input" id="guest-email-input" type="email" placeholder="Guest email address">
+          <button class="add-guest-btn" onclick="addGuest()">+ Add</button>
+        </div>
+        <div class="guest-list" id="guest-list"></div>
+      </div>
     </div>
 
     <div class="sending-bar" id="sending-bar">
@@ -113,6 +145,7 @@
   let isOpen = false;
   let members = [];
   let selected = {};
+  let guestEmails = [];
   let submitted = false;
 
   const d = new Date();
@@ -156,20 +189,54 @@
     updateBtn();
   }
 
+  function addGuest() {
+    const input = document.getElementById('guest-email-input');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) { alert('Please enter a valid email address'); return; }
+    if (guestEmails.includes(email)) { alert('This guest has already been added'); return; }
+    guestEmails.push(email);
+    input.value = '';
+    renderGuestList();
+    updateBtn();
+  }
+
+  document.getElementById('guest-email-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') addGuest();
+  });
+
+  function removeGuest(email) {
+    guestEmails = guestEmails.filter(e => e !== email);
+    renderGuestList();
+    updateBtn();
+  }
+
+  function renderGuestList() {
+    const list = document.getElementById('guest-list');
+    list.innerHTML = guestEmails.map(email => `
+      <div class="guest-tag">
+        <span class="guest-tag-icon">✉️</span>
+        <span class="guest-tag-email">${email}</span>
+        <button class="guest-tag-remove" onclick="removeGuest('${email}')">×</button>
+      </div>`).join('');
+  }
+
   function toggleOpen() {
     if (submitted) return;
     isOpen = !isOpen;
     document.getElementById('switch').className = 'switch' + (isOpen ? ' on' : '');
     document.getElementById('toggle-sub').textContent = isOpen ? 'Open — selected members will be notified' : 'Solo session — only you';
-    document.getElementById('invite-panel').style.display = isOpen ? 'block' : 'none';
+    document.getElementById('open-section').style.display = isOpen ? 'block' : 'none';
     updateBtn();
   }
 
   function updateBtn() {
-    const count = Object.values(selected).filter(Boolean).length;
+    const memberCount = Object.values(selected).filter(Boolean).length;
+    const guestCount = guestEmails.length;
+    const total = memberCount + guestCount;
     const btn = document.getElementById('main-btn');
     if (!isOpen) { btn.textContent = 'Confirm booking'; return; }
-    btn.textContent = count > 0 ? 'Send invites to ' + count + ' player' + (count > 1 ? 's' : '') : 'Send invites';
+    if (total === 0) { btn.textContent = 'Send invites'; }
+    else { btn.textContent = 'Send invites to ' + total + ' player' + (total > 1 ? 's' : ''); }
   }
 
   async function handleSubmit() {
@@ -195,43 +262,75 @@
 
     const invitedMembers = members.filter(m => selected[m.id]);
 
-    if (isOpen && invitedMembers.length > 0) {
-      const inviteRows = invitedMembers.map(m => ({ session_id: sessionData.id, invited_member_id: m.id, status: 'pending' }));
-      const { data: inviteData, error: inviteError } = await db.from('invites').insert(inviteRows).select();
-      if (inviteError) { showError('Invite save failed: ' + inviteError.message); submitted = false; btn.disabled = false; return; }
-
+    if (isOpen && (invitedMembers.length > 0 || guestEmails.length > 0)) {
       document.getElementById('sending-bar').style.display = 'flex';
-      document.getElementById('sending-text').textContent = 'Sending invites...';
-      btn.textContent = 'Sending...';
 
-      let sent = 0;
-      for (let i = 0; i < invitedMembers.length; i++) {
-        const member = invitedMembers[i];
-        const invite = inviteData[i];
-        document.getElementById('sending-text').textContent = `Sending to ${member.name}...`;
-        try {
-          await fetch('/api/send-invite', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              inviteId: invite.id,
-              memberName: member.name,
-              memberEmail: member.email,
-              hostName: HOST_NAME,
-              bayName: BAY_NAME,
-              sessionDate: dateLabel,
-              startTime: formatTime('16:00:00'),
-              endTime: formatTime('17:30:00'),
-              facilityName: FACILITY_NAME
-            })
-          });
-          sent++;
-        } catch(e) { console.error('Email failed for', member.name, e); }
+      // Send member invites
+      if (invitedMembers.length > 0) {
+        const inviteRows = invitedMembers.map(m => ({ session_id: sessionData.id, invited_member_id: m.id, status: 'pending' }));
+        const { data: inviteData, error: inviteError } = await db.from('invites').insert(inviteRows).select();
+        if (!inviteError && inviteData) {
+          for (let i = 0; i < invitedMembers.length; i++) {
+            const member = invitedMembers[i];
+            const invite = inviteData[i];
+            document.getElementById('sending-text').textContent = `Sending to ${member.name}...`;
+            try {
+              await fetch('/api/send-invite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  inviteId: invite.id,
+                  memberName: member.name,
+                  memberEmail: member.email,
+                  hostName: HOST_NAME,
+                  bayName: BAY_NAME,
+                  sessionDate: dateLabel,
+                  startTime: formatTime('16:00:00'),
+                  endTime: formatTime('17:30:00'),
+                  facilityName: FACILITY_NAME
+                })
+              });
+            } catch(e) { console.error('Member email failed:', e); }
+          }
+        }
+      }
+
+      // Send guest invites
+      for (const guestEmail of guestEmails) {
+        document.getElementById('sending-text').textContent = `Sending guest invite to ${guestEmail}...`;
+        const { data: guestData } = await db.from('guests').insert({
+          session_id: sessionData.id,
+          email: guestEmail,
+          invited_by: HOST_NAME,
+          facility_id: FACILITY_ID,
+          status: 'pending'
+        }).select().single();
+
+        if (guestData) {
+          const guestAcceptUrl = `https://baybuddy.vercel.app/guest.html?guest=${guestData.id}`;
+          try {
+            await fetch('/api/send-guest-invite', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                guestEmail: guestEmail,
+                hostName: HOST_NAME,
+                bayName: BAY_NAME,
+                sessionDate: dateLabel,
+                startTime: formatTime('16:00:00'),
+                endTime: formatTime('17:30:00'),
+                facilityName: FACILITY_NAME,
+                acceptUrl: guestAcceptUrl
+              })
+            });
+          } catch(e) { console.error('Guest email failed:', e); }
+        }
       }
 
       document.getElementById('sending-bar').style.display = 'none';
-      const names = invitedMembers.map(m => m.name).join(', ');
-      showConfirm(`Session is open! Invites sent to ${names}. They'll receive an email to accept or decline.`);
+      const memberNames = invitedMembers.map(m => m.name).join(', ');
+      const guestNote = guestEmails.length > 0 ? ` + ${guestEmails.length} guest${guestEmails.length > 1 ? 's' : ''}` : '';
+      showConfirm(`Session is open! Invites sent to ${memberNames || ''}${guestNote}. They'll receive an email to accept or decline.`);
       btn.textContent = 'Invites sent ✓';
     } else {
       showConfirm('Booking confirmed. See you at ' + BAY_NAME + '!');
