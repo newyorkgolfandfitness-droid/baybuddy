@@ -32,30 +32,29 @@
   .chip { padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 0.5px solid #2a2a2a; background: #1a1a1a; color: #888; white-space: nowrap; }
   .chip:hover { border-color: #D4A800; color: #D4A800; }
   .chip.active { background: #D4A800; color: #111; border-color: #D4A800; }
-  .chip.soon { opacity: 0.4; cursor: default; }
-  .chip.soon:hover { border-color: #2a2a2a; color: #888; }
-  .soon-badge { font-size: 9px; background: #2a2a2a; color: #666; border-radius: 4px; padding: 1px 4px; margin-left: 4px; vertical-align: middle; }
-  .notice-box { border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
-  .notice-box.gold { background: #1f1f00; border: 0.5px solid #3a3000; }
-  .notice-box.blue { background: #001f3f; border: 0.5px solid #003a7a; }
+  .notice-box { background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
   .notice-text { font-size: 13px; color: #D4A800; line-height: 1.5; }
-  .notice-text.blue { color: #60a5fa; }
   .invite-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
   .invite-hint { font-size: 12px; color: #555; margin-bottom: 14px; }
   .member-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid #222; cursor: pointer; }
   .member-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .member-row.no-cursor { cursor: default; }
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #888; flex-shrink: 0; transition: all 0.15s; }
   .avatar.selected { background: #3a2e00; color: #D4A800; }
-  .avatar.circle { background: #001f3f; color: #60a5fa; }
+  .avatar.circle-av { background: #001f3f; color: #60a5fa; }
   .member-info { flex: 1; }
   .member-name { font-size: 14px; color: #ccc; }
   .member-hcp { font-size: 12px; color: #555; }
   .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 12px; }
   .checkbox.checked { background: #D4A800; border-color: #D4A800; color: #111; }
-  .circle-toggle { width: 18px; height: 18px; border-radius: 50%; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; cursor: pointer; }
-  .circle-toggle.in-circle { background: #60a5fa; border-color: #60a5fa; color: #111; }
-  .circle-manage-btn { display: flex; align-items: center; gap: 6px; background: none; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 8px 14px; font-size: 12px; color: #888; cursor: pointer; margin-bottom: 16px; }
-  .circle-manage-btn:hover { border-color: #60a5fa; color: #60a5fa; }
+  .circle-btn { width: 22px; height: 22px; border-radius: 50%; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; cursor: pointer; background: none; transition: all 0.15s; }
+  .circle-btn.in { background: #60a5fa; border-color: #60a5fa; color: #111; }
+  .manage-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .manage-title { font-size: 13px; font-weight: 600; color: #e8e8e8; }
+  .manage-close { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; }
+  .manage-close:hover { color: #e8e8e8; }
+  .manage-btn { background: none; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #888; cursor: pointer; }
+  .manage-btn:hover { border-color: #60a5fa; color: #60a5fa; }
   .circle-empty { text-align: center; padding: 20px; font-size: 13px; color: #555; }
   .circle-empty-btn { display: inline-block; margin-top: 10px; padding: 8px 16px; background: none; border: 0.5px solid #D4A800; border-radius: 8px; font-size: 12px; color: #D4A800; cursor: pointer; }
   .guest-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
@@ -65,17 +64,16 @@
   .guest-input { flex: 1; background: #111; border: 0.5px solid #333; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #e8e8e8; outline: none; }
   .guest-input:focus { border-color: #D4A800; }
   .guest-input::placeholder { color: #444; }
-  .add-guest-btn { background: none; border: 0.5px solid #D4A800; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #D4A800; cursor: pointer; white-space: nowrap; }
+  .add-guest-btn { background: none; border: 0.5px solid #D4A800; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #D4A800; cursor: pointer; }
   .add-guest-btn:hover { background: #1f1f00; }
   .guest-tag { display: flex; align-items: center; gap: 8px; background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
   .guest-tag-email { font-size: 13px; color: #D4A800; flex: 1; }
-  .guest-tag-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 16px; padding: 0; line-height: 1; }
+  .guest-tag-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 16px; padding: 0; }
   .guest-tag-remove:hover { color: #f87171; }
   .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #D4A800; color: #111; }
   .btn:hover { background: #e8b800; }
   .btn:disabled { background: #2a2a2a; color: #444; cursor: default; }
   .confirm { background: #0f2a1a; border: 0.5px solid #1a5a30; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; align-items: flex-start; gap: 10px; }
-  .confirm-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
   .confirm-text { font-size: 13px; color: #4ade80; line-height: 1.5; }
   .error-msg { background: #2a0f0f; border: 0.5px solid #5a1a1a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; font-size: 13px; color: #f87171; }
   .sending-bar { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; align-items: center; gap: 12px; }
@@ -84,19 +82,12 @@
   .sending-text { font-size: 13px; color: #666; }
   .divider { height: 0.5px; background: #2a2a2a; margin-bottom: 20px; }
   .footer { text-align: center; margin-top: 16px; font-size: 11px; color: #333; }
-  .manage-mode-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .manage-mode-title { font-size: 13px; font-weight: 600; color: #e8e8e8; }
-  .manage-mode-close { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; padding: 0; }
-  .manage-mode-close:hover { color: #e8e8e8; }
 </style>
 </head>
 <body>
 <div class="widget">
   <div class="header">
-    <div>
-      <div class="logo">BayBuddy</div>
-      <div class="tagline">Play better together</div>
-    </div>
+    <div><div class="logo">BayBuddy</div><div class="tagline">Play better together</div></div>
     <div class="live-badge">● Live</div>
   </div>
   <div class="body">
@@ -114,7 +105,7 @@
         <div class="toggle-label">Open this session to others</div>
         <div class="toggle-sub" id="toggle-sub">Solo session — only you</div>
       </div>
-      <div class="switch" id="switch"><div class="switch-knob"></div></div>
+      <div class="switch" id="sw"><div class="switch-knob"></div></div>
     </div>
 
     <div id="open-section" style="display:none;">
@@ -129,66 +120,57 @@
         </div>
       </div>
 
-      <!-- Specific People -->
       <div id="mode-specific">
         <div class="section-label">Invite members</div>
-        <div class="invite-panel" id="invite-panel">
+        <div class="invite-panel">
           <div class="invite-hint">Select members from your facility</div>
           <div id="member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading members...</div></div>
         </div>
       </div>
 
-      <!-- Anyone -->
       <div id="mode-anyone" style="display:none;">
-        <div class="notice-box gold">
+        <div class="notice-box">
           <div class="notice-text">🏌️ <strong>Open to everyone</strong> — all facility members will receive an invite and can join on a first-come, first-served basis until the bay is full.</div>
         </div>
       </div>
 
-      <!-- My Circle -->
       <div id="mode-circle" style="display:none;">
         <div id="circle-invite-view">
-          <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <span>My Circle</span>
-            <button class="circle-manage-btn" onclick="showManageCircle()">⚙ Manage Circle</button>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div class="section-label" style="margin-bottom:0;">My Circle</div>
+            <button class="manage-btn" onclick="showManageCircle()">⚙ Manage</button>
           </div>
           <div class="invite-panel" id="circle-list">
-            <div class="circle-empty" id="circle-empty">
+            <div class="circle-empty">
               <div>Your circle is empty</div>
               <button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button>
             </div>
           </div>
         </div>
-
-        <!-- Manage circle overlay -->
         <div id="circle-manage-view" style="display:none;">
           <div class="invite-panel">
-            <div class="manage-mode-header">
-              <div class="manage-mode-title">👥 Manage My Circle</div>
-              <button class="manage-mode-close" onclick="hideManageCircle()">✕</button>
+            <div class="manage-header">
+              <div class="manage-title">👥 Manage My Circle</div>
+              <button class="manage-close" onclick="hideManageCircle()">✕</button>
             </div>
-            <div style="font-size:12px;color:#555;margin-bottom:14px;">Tap the circle icon to add or remove members from your circle.</div>
-            <div id="manage-member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading...</div></div>
+            <div style="font-size:12px;color:#555;margin-bottom:14px;">Tap + to add or ✓ to remove from your circle.</div>
+            <div id="manage-list"></div>
           </div>
         </div>
       </div>
 
-      <!-- Coming soon modes -->
       <div id="mode-handicap" style="display:none;">
-        <div class="notice-box gold" style="margin-bottom:12px;">
+        <div class="notice-box" style="margin-bottom:12px;">
           <div class="notice-text">⛳ Showing members within <strong>±5 strokes</strong> of your handicap (11). All matched members will be invited.</div>
         </div>
-        <div class="invite-panel" id="handicap-list">
-          <div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading...</div>
-        </div>
+        <div class="invite-panel" id="handicap-list"></div>
       </div>
+
       <div id="mode-played" style="display:none;">
-        <div class="notice-box gold" style="margin-bottom:12px;">
+        <div class="notice-box" style="margin-bottom:12px;">
           <div class="notice-text">🔄 Members you've played with before — based on your session history.</div>
         </div>
-        <div class="invite-panel" id="played-list">
-          <div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading session history...</div>
-        </div>
+        <div class="invite-panel" id="played-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading...</div></div>
       </div>
 
       <div class="divider"></div>
@@ -196,7 +178,7 @@
       <div class="section-label">Invite a guest</div>
       <div class="guest-panel">
         <div class="guest-title">Not a member yet?</div>
-        <div class="guest-sub">Enter their email to send them a guest invite. $25/hr fee collected at the facility.</div>
+        <div class="guest-sub">Enter their email to send a guest invite. $25/hr fee collected at the facility.</div>
         <div class="guest-input-row">
           <input class="guest-input" id="guest-email-input" type="email" placeholder="Guest email address">
           <button class="add-guest-btn" onclick="addGuest()">+ Add</button>
@@ -209,474 +191,301 @@
       <div class="spinner"></div>
       <div class="sending-text" id="sending-text">Sending invites...</div>
     </div>
-
     <div class="confirm" id="confirm">
-      <div class="confirm-icon">✓</div>
       <div class="confirm-text" id="confirm-text"></div>
     </div>
-
     <div class="error-msg" id="error-msg"></div>
-
     <button class="btn" id="main-btn" onclick="handleSubmit()">Confirm booking</button>
     <div class="footer">Powered by BayBuddy</div>
   </div>
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
-  const FACILITY_ID = '00000000-0000-0000-0000-000000000001';
-  const FACILITY_NAME = 'New York Golf & Fitness';
-  const HOST_NAME = 'Mike';
-  const BAY_NAME = 'Empire Bay';
+const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
+const FACILITY_ID = '00000000-0000-0000-0000-000000000001';
+const FACILITY_NAME = 'New York Golf & Fitness';
+const HOST_NAME = 'Mike';
+const HOST_MEMBER_ID = 'f1916fea-5397-4155-b121-1bd493d020b6';
+const BAY_NAME = 'Empire Bay';
+const HOST_HANDICAP = 11;
+const HANDICAP_RANGE = 5;
 
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let isOpen = false;
+let currentFilter = 'specific';
+let members = [];
+let selected = {};
+let circleIds = new Set();
+let guestEmails = [];
+let submitted = false;
 
-  let isOpen = false;
-  let currentFilter = 'specific';
-  let members = [];
-  let selected = {};
-  let circleIds = new Set();
-  let guestEmails = [];
-  let submitted = false;
+const d = new Date();
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+document.getElementById('session-date').textContent = MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 
-  const d = new Date();
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  document.getElementById('session-date').textContent = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+function fmtTime(t) {
+  const [h,m] = t.split(':'); const hr = parseInt(h);
+  return (hr%12||12)+':'+m+' '+(hr>=12?'PM':'AM');
+}
+function initials(name) { return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 
-  function formatTime(t) {
-    const [h,m] = t.split(':');
-    const hr = parseInt(h);
-    return (hr % 12 || 12) + ':' + m + ' ' + (hr >= 12 ? 'PM' : 'AM');
+// ── Load members ──────────────────────────────────────────────
+async function loadMembers() {
+  const {data,error} = await db.from('members').select('*').eq('facility_id',FACILITY_ID).neq('name',HOST_NAME);
+  if (error) { document.getElementById('member-list').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load</div>'; return; }
+  members = data;
+  const saved = localStorage.getItem('bb_circle_'+FACILITY_ID);
+  if (saved) circleIds = new Set(JSON.parse(saved));
+  renderMemberList();
+}
+
+function renderMemberList() {
+  const el = document.getElementById('member-list');
+  if (!members.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
+  el.innerHTML = members.map(m=>`
+    <div class="member-row" onclick="toggleMember('${m.id}')">
+      <div class="avatar" id="av-${m.id}">${initials(m.name)}</div>
+      <div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div>
+      <div class="checkbox" id="cb-${m.id}"></div>
+    </div>`).join('');
+}
+
+function toggleMember(id) {
+  if (submitted) return;
+  selected[id] = !selected[id];
+  document.getElementById('cb-'+id).className = 'checkbox'+(selected[id]?' checked':'');
+  document.getElementById('cb-'+id).textContent = selected[id]?'✓':'';
+  document.getElementById('av-'+id).className = 'avatar'+(selected[id]?' selected':'');
+  updateBtn();
+}
+
+// ── Circle ────────────────────────────────────────────────────
+function saveCircle() { localStorage.setItem('bb_circle_'+FACILITY_ID, JSON.stringify([...circleIds])); }
+
+function toggleCircleMember(id) {
+  if (circleIds.has(id)) circleIds.delete(id); else circleIds.add(id);
+  saveCircle(); renderManageList(); renderCircleList(); updateBtn();
+}
+
+function renderCircleList() {
+  const el = document.getElementById('circle-list');
+  const cm = members.filter(m=>circleIds.has(m.id));
+  if (!cm.length) {
+    el.innerHTML='<div class="circle-empty"><div>Your circle is empty</div><button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button></div>';
+    return;
   }
+  el.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${cm.length} regular partner${cm.length>1?'s':''} — all will be invited</div>`
+    + cm.map(m=>`<div class="member-row no-cursor"><div class="avatar circle-av">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><div style="font-size:11px;color:#60a5fa;">In circle ✓</div></div>`).join('')
+    + `<button style="margin-top:12px;background:none;border:none;font-size:12px;color:#555;cursor:pointer;" onclick="showManageCircle()">⚙ Edit circle</button>`;
+}
 
-  function getInitials(name) {
-    return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  }
+function renderManageList() {
+  const el = document.getElementById('manage-list');
+  el.innerHTML = members.map(m=>{
+    const inc = circleIds.has(m.id);
+    return `<div class="member-row no-cursor"><div class="avatar ${inc?'circle-av':''}">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><button class="circle-btn ${inc?'in':''}" onclick="toggleCircleMember('${m.id}')">${inc?'✓':'+'}</button></div>`;
+  }).join('');
+}
 
-  async function loadMembers() {
-    const { data, error } = await db.from('members').select('*').eq('facility_id', FACILITY_ID).neq('name', HOST_NAME);
-    if (error) { document.getElementById('member-list').innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load members</div>'; return; }
-    members = data;
-    renderMemberList();
-    await loadCircle();
-  }
+function showManageCircle() {
+  document.getElementById('circle-invite-view').style.display='none';
+  document.getElementById('circle-manage-view').style.display='block';
+  renderManageList();
+}
 
-  function renderMemberList() {
-    const list = document.getElementById('member-list');
-    if (!members.length) { list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
-    list.innerHTML = members.map(m => {
-      const initials = getInitials(m.name);
-      return `<div class="member-row" onclick="toggleMember('${m.id}')">
-        <div class="avatar" id="av-${m.id}">${initials}</div>
-        <div class="member-info">
-          <div class="member-name">${m.name}</div>
-          <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
-        </div>
-        <div class="checkbox" id="cb-${m.id}"></div>
-      </div>`;
+function hideManageCircle() {
+  document.getElementById('circle-manage-view').style.display='none';
+  document.getElementById('circle-invite-view').style.display='block';
+  renderCircleList(); updateBtn();
+}
+
+// ── Handicap filter ───────────────────────────────────────────
+function renderHandicapList() {
+  const matched = members.filter(m=>m.handicap!=null && Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE);
+  const el = document.getElementById('handicap-list');
+  if (!matched.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members within ±5 strokes</div>'; return; }
+  el.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${matched.length} member${matched.length>1?'s':''} matched — all will be invited</div>`
+    + matched.map(m=>{
+      const diff = m.handicap - HOST_HANDICAP;
+      const label = diff===0?'same':(diff<0?diff:'+'+diff)+' strokes';
+      return `<div class="member-row no-cursor"><div class="avatar selected">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">Handicap: ${m.handicap} (${label})</div></div><div style="font-size:11px;color:#D4A800;">✓ Matched</div></div>`;
     }).join('');
-  }
+}
 
-  async function loadCircle() {
-    // For demo, using Mike's member ID — will be dynamic later
-    const mikeMember = members.find(m => false); // placeholder
-    // Load from local storage for now as a demo
-    const saved = localStorage.getItem('baybuddy_circle_' + FACILITY_ID);
-    if (saved) {
-      circleIds = new Set(JSON.parse(saved));
-    }
-    renderCircleList();
-  }
+// ── Played before filter ──────────────────────────────────────
+async function renderPlayedList() {
+  const el = document.getElementById('played-list');
+  el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading session history...</div>';
+  const {data:sessions} = await db.from('sessions').select('id').eq('facility_id',FACILITY_ID);
+  if (!sessions||!sessions.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No session history yet.</div>'; return; }
+  const ids = sessions.map(s=>s.id);
+  const {data:invites} = await db.from('invites').select('invited_member_id').in('session_id',ids).eq('status','accepted');
+  if (!invites||!invites.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No one has joined your sessions yet.</div>'; return; }
+  const playedIds = [...new Set(invites.map(i=>i.invited_member_id))];
+  const played = members.filter(m=>playedIds.includes(m.id));
+  if (!played.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No previous playing partners found.</div>'; return; }
+  el.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${played.length} previous partner${played.length>1?'s':''} — all will be invited</div>`
+    + played.map(m=>`<div class="member-row no-cursor"><div class="avatar selected">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><div style="font-size:11px;color:#D4A800;">Played before ✓</div></div>`).join('');
+}
 
-  async function toggleCircleMember(memberId) {
-    if (circleIds.has(memberId)) {
-      circleIds.delete(memberId);
-    } else {
-      circleIds.add(memberId);
-    }
-    localStorage.setItem('baybuddy_circle_' + FACILITY_ID, JSON.stringify([...circleIds]));
-    renderCircleList();
-    renderManageList();
-    updateBtn();
-  }
-
-  function renderCircleList() {
-    const container = document.getElementById('circle-list');
-    const empty = document.getElementById('circle-empty');
-    const circleMembers = members.filter(m => circleIds.has(m.id));
-
-    if (circleMembers.length === 0) {
-      container.innerHTML = `<div class="circle-empty" id="circle-empty">
-        <div>Your circle is empty</div>
-        <button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button>
-      </div>`;
-      return;
-    }
-
-    container.innerHTML = `
-      <div style="font-size:12px;color:#555;margin-bottom:14px;">Your ${circleMembers.length} regular playing partner${circleMembers.length > 1 ? 's' : ''} — all will be invited</div>
-      ${circleMembers.map(m => `
-        <div class="member-row">
-          <div class="avatar circle">${getInitials(m.name)}</div>
-          <div class="member-info">
-            <div class="member-name">${m.name}</div>
-            <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
-          </div>
-          <div style="font-size:11px;color:#60a5fa;">In circle ✓</div>
-        </div>`).join('')}
-      <button style="margin-top:12px;background:none;border:none;font-size:12px;color:#555;cursor:pointer;padding:0;" onclick="showManageCircle()">⚙ Edit circle</button>`;
-  }
-
-  function renderManageList() {
-    const list = document.getElementById('manage-member-list');
-    if (!members.length) { list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
-    list.innerHTML = members.map(m => {
-      const inCircle = circleIds.has(m.id);
-      return `<div class="member-row">
-        <div class="avatar ${inCircle ? 'circle' : ''}">${getInitials(m.name)}</div>
-        <div class="member-info">
-          <div class="member-name">${m.name}</div>
-          <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
-        </div>
-        <div class="circle-toggle ${inCircle ? 'in-circle' : ''}" onclick="toggleCircleMember('${m.id}')" title="${inCircle ? 'Remove from circle' : 'Add to circle'}">
-          ${inCircle ? '✓' : '+'}
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  function showManageCircle() {
-    document.getElementById('circle-invite-view').style.display = 'none';
-    document.getElementById('circle-manage-view').style.display = 'block';
-    renderManageList();
-  }
-
-  function hideManageCircle() {
-    document.getElementById('circle-manage-view').style.display = 'none';
-    document.getElementById('circle-invite-view').style.display = 'block';
-    renderCircleList();
-    updateBtn();
-  }
-
-  const HOST_MEMBER_ID = 'f1916fea-5397-4155-b121-1bd493d020b6';
-
-  function setFilter(filter) {
-    const soon = [];
-    currentFilter = filter;
-    ['specific','anyone','circle','handicap','played'].forEach(f => {
-      const chip = document.getElementById('chip-' + f);
-      if (chip) chip.className = 'chip' + (f === filter ? ' active' : '');
-      const mode = document.getElementById('mode-' + f);
-      if (mode) mode.style.display = f === filter ? 'block' : 'none';
-    });
-    if (filter === 'handicap') renderHandicapList();
-    if (filter === 'played') renderPlayedList();
-    updateBtn();
-  }
-
-  function renderHandicapList() {
-    const HOST_HANDICAP = 11;
-    const RANGE = 5;
-    const matched = members.filter(m => m.handicap != null && Math.abs(m.handicap - HOST_HANDICAP) <= RANGE);
-    const list = document.getElementById('handicap-list');
-    if (!matched.length) {
-      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found within ±5 strokes</div>';
-      return;
-    }
-    list.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${matched.length} member${matched.length > 1 ? 's' : ''} matched — all will be invited</div>` +
-      matched.map(m => `
-        <div class="member-row">
-          <div class="avatar selected">${getInitials(m.name)}</div>
-          <div class="member-info">
-            <div class="member-name">${m.name}</div>
-            <div class="member-hcp">Handicap: ${m.handicap} (${Math.abs(m.handicap - HOST_HANDICAP) === 0 ? 'same' : (m.handicap < HOST_HANDICAP ? '-' : '+') + Math.abs(m.handicap - HOST_HANDICAP)} strokes)</div>
-          </div>
-          <div style="font-size:11px;color:#D4A800;">✓ Matched</div>
-        </div>`).join('');
-  }
-
-  function toggleMember(id) {
-    if (submitted) return;
-    selected[id] = !selected[id];
-    const cb = document.getElementById('cb-'+id);
-    const av = document.getElementById('av-'+id);
-    cb.className = 'checkbox' + (selected[id] ? ' checked' : '');
-    cb.textContent = selected[id] ? '✓' : '';
-    av.className = 'avatar' + (selected[id] ? ' selected' : '');
-    updateBtn();
-  }
-
-  function addGuest() {
-    const input = document.getElementById('guest-email-input');
-    const email = input.value.trim();
-    if (!email || !email.includes('@')) { alert('Please enter a valid email address'); return; }
-    if (guestEmails.includes(email)) { alert('This guest has already been added'); return; }
-    guestEmails.push(email);
-    input.value = '';
-    renderGuestList();
-    updateBtn();
-  }
-
-  document.getElementById('guest-email-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') addGuest();
+// ── Filter switching ──────────────────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  ['specific','anyone','circle','handicap','played'].forEach(k=>{
+    document.getElementById('chip-'+k).className='chip'+(k===f?' active':'');
+    document.getElementById('mode-'+k).style.display=k===f?'block':'none';
   });
+  if (f==='circle') renderCircleList();
+  if (f==='handicap') renderHandicapList();
+  if (f==='played') renderPlayedList();
+  updateBtn();
+}
 
-  function removeGuest(email) {
-    guestEmails = guestEmails.filter(e => e !== email);
-    renderGuestList();
-    updateBtn();
+// ── Toggle open ───────────────────────────────────────────────
+function toggleOpen() {
+  if (submitted) return;
+  isOpen = !isOpen;
+  document.getElementById('sw').className='switch'+(isOpen?' on':'');
+  document.getElementById('toggle-sub').textContent=isOpen?'Open — selected members will be notified':'Solo session — only you';
+  document.getElementById('open-section').style.display=isOpen?'block':'none';
+  updateBtn();
+}
+
+// ── Guest ─────────────────────────────────────────────────────
+function addGuest() {
+  const inp = document.getElementById('guest-email-input');
+  const email = inp.value.trim();
+  if (!email||!email.includes('@')) { alert('Please enter a valid email'); return; }
+  if (guestEmails.includes(email)) { alert('Already added'); return; }
+  guestEmails.push(email); inp.value='';
+  renderGuestList(); updateBtn();
+}
+
+document.getElementById('guest-email-input').addEventListener('keypress',e=>{ if(e.key==='Enter') addGuest(); });
+
+function removeGuest(email) { guestEmails=guestEmails.filter(e=>e!==email); renderGuestList(); updateBtn(); }
+
+function renderGuestList() {
+  document.getElementById('guest-list').innerHTML = guestEmails.map(e=>`
+    <div class="guest-tag"><span>✉️</span><span class="guest-tag-email">${e}</span><button class="guest-tag-remove" onclick="removeGuest('${e}')">×</button></div>`).join('');
+}
+
+// ── Update button ─────────────────────────────────────────────
+function updateBtn() {
+  const btn = document.getElementById('main-btn');
+  if (!isOpen) { btn.textContent='Confirm booking'; return; }
+  const g = guestEmails.length;
+  const gs = g>0?' + '+g+' guest'+(g>1?'s':''):'';
+  if (currentFilter==='anyone') { btn.textContent='Open session to all members'+gs; return; }
+  if (currentFilter==='circle') {
+    const n=[...circleIds].length;
+    btn.textContent = n===0?'Send invites':'Invite my circle ('+n+' player'+(n>1?'s':')')+gs; return;
+  }
+  if (currentFilter==='handicap') {
+    const n=members.filter(m=>m.handicap!=null&&Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE).length;
+    btn.textContent = n===0?'No matched players':'Invite '+n+' matched player'+(n>1?'s':'')+gs; return;
+  }
+  if (currentFilter==='played') { btn.textContent='Invite previous playing partners'+gs; return; }
+  const n=Object.values(selected).filter(Boolean).length;
+  btn.textContent = (n+g)===0?'Send invites':'Send invites to '+(n+g)+' player'+((n+g)>1?'s':'');
+}
+
+// ── Send invites ──────────────────────────────────────────────
+async function sendMemberInvites(sessionId, invitedMembers, dateLabel) {
+  if (!invitedMembers.length) return;
+  const rows = invitedMembers.map(m=>({session_id:sessionId,invited_member_id:m.id,status:'pending'}));
+  const {data:inviteData,error} = await db.from('invites').insert(rows).select();
+  if (error||!inviteData) return;
+  for (let i=0;i<invitedMembers.length;i++) {
+    const m=invitedMembers[i], inv=inviteData[i];
+    document.getElementById('sending-text').textContent='Sending to '+m.name+'...';
+    try {
+      await fetch('/api/send-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        inviteId:inv.id,memberName:m.name,memberEmail:m.email,hostName:HOST_NAME,bayName:BAY_NAME,
+        sessionDate:dateLabel,startTime:fmtTime('16:00:00'),endTime:fmtTime('17:30:00'),facilityName:FACILITY_NAME
+      })});
+    } catch(e) { console.error(e); }
+  }
+}
+
+async function sendGuestInvites(sessionId, dateLabel) {
+  for (const email of guestEmails) {
+    document.getElementById('sending-text').textContent='Sending guest invite to '+email+'...';
+    const {data:gd} = await db.from('guests').insert({session_id:sessionId,email,invited_by:HOST_NAME,facility_id:FACILITY_ID,status:'pending'}).select().single();
+    if (gd) {
+      try {
+        await fetch('/api/send-guest-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+          guestEmail:email,hostName:HOST_NAME,bayName:BAY_NAME,sessionDate:dateLabel,
+          startTime:fmtTime('16:00:00'),endTime:fmtTime('17:30:00'),facilityName:FACILITY_NAME,
+          acceptUrl:'https://baybuddy.vercel.app/guest.html?guest='+gd.id
+        })});
+      } catch(e) { console.error(e); }
+    }
+  }
+}
+
+async function handleSubmit() {
+  if (submitted) return;
+  submitted=true;
+  const btn=document.getElementById('main-btn');
+  btn.disabled=true;
+
+  const today=new Date().toISOString().split('T')[0];
+  const dateLabel=DAYS[new Date().getDay()]+', '+MONTHS[new Date().getMonth()]+' '+new Date().getDate();
+
+  const {data:sess,error:sessErr} = await db.from('sessions').insert({
+    facility_id:FACILITY_ID,host_member_id:null,bay_name:BAY_NAME,
+    session_date:today,start_time:'16:00:00',end_time:'17:30:00',is_open:isOpen
+  }).select().single();
+
+  if (sessErr) { showError('Session save failed: '+sessErr.message); submitted=false; btn.disabled=false; return; }
+
+  if (!isOpen) { showConfirm('Booking confirmed. See you at '+BAY_NAME+'!'); btn.textContent='Booked ✓'; return; }
+
+  document.getElementById('sending-bar').style.display='flex';
+
+  let invited=[];
+  if (currentFilter==='anyone') {
+    invited=members;
+  } else if (currentFilter==='circle') {
+    invited=members.filter(m=>circleIds.has(m.id));
+  } else if (currentFilter==='handicap') {
+    invited=members.filter(m=>m.handicap!=null&&Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE);
+  } else if (currentFilter==='played') {
+    const {data:sessions2} = await db.from('sessions').select('id').eq('facility_id',FACILITY_ID);
+    if (sessions2&&sessions2.length) {
+      const sids=sessions2.map(s=>s.id);
+      const {data:pinv} = await db.from('invites').select('invited_member_id').in('session_id',sids).eq('status','accepted');
+      if (pinv) { const pids=[...new Set(pinv.map(i=>i.invited_member_id))]; invited=members.filter(m=>pids.includes(m.id)); }
+    }
+  } else {
+    invited=members.filter(m=>selected[m.id]);
   }
 
-  function renderGuestList() {
-    const list = document.getElementById('guest-list');
-    list.innerHTML = guestEmails.map(email => `
-      <div class="guest-tag">
-        <span style="font-size:14px;">✉️</span>
-        <span class="guest-tag-email">${email}</span>
-        <button class="guest-tag-remove" onclick="removeGuest('${email}')">×</button>
-      </div>`).join('');
-  }
+  await sendMemberInvites(sess.id, invited, dateLabel);
+  await sendGuestInvites(sess.id, dateLabel);
 
-  async function renderPlayedList() {
-    const list = document.getElementById('played-list');
-    list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading session history...</div>';
+  document.getElementById('sending-bar').style.display='none';
 
-    // Find sessions hosted by Mike
-    const { data: hostedSessions } = await db.from('sessions').select('id').eq('facility_id', FACILITY_ID);
-    if (!hostedSessions || hostedSessions.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No session history yet — play some rounds first!</div>';
-      return;
-    }
+  const msgs = {
+    anyone: 'Session is open to all '+invited.length+' members! First 3 to accept get in.',
+    circle: 'Your circle of '+invited.length+' has been invited!',
+    handicap: 'Invites sent to '+invited.length+' players within ±5 strokes!',
+    played: 'Invites sent to '+invited.length+' previous playing partner'+(invited.length>1?'s':'')+'!',
+  };
+  const names = invited.map(m=>m.name).join(', ');
+  const gNote = guestEmails.length>0?' + '+guestEmails.length+' guest'+(guestEmails.length>1?'s':''):'';
+  showConfirm(msgs[currentFilter] || 'Session is open! Invites sent to '+names+gNote+'.');
+  btn.textContent='Invites sent ✓';
+}
 
-    const sessionIds = hostedSessions.map(s => s.id);
+function showConfirm(msg) { document.getElementById('confirm-text').textContent=msg; document.getElementById('confirm').style.display='flex'; }
+function showError(msg) { document.getElementById('error-msg').textContent=msg; document.getElementById('error-msg').style.display='block'; submitted=false; document.getElementById('main-btn').disabled=false; document.getElementById('sending-bar').style.display='none'; }
 
-    // Find members who accepted invites in those sessions
-    const { data: acceptedInvites } = await db.from('invites')
-      .select('invited_member_id')
-      .in('session_id', sessionIds)
-      .eq('status', 'accepted');
-
-    if (!acceptedInvites || acceptedInvites.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No one has joined your sessions yet.</div>';
-      return;
-    }
-
-    // Get unique member IDs
-    const playedMemberIds = [...new Set(acceptedInvites.map(i => i.invited_member_id))];
-    const playedMembers = members.filter(m => playedMemberIds.includes(m.id));
-
-    if (!playedMembers.length) {
-      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No previous playing partners found.</div>';
-      return;
-    }
-
-    list.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${playedMembers.length} member${playedMembers.length > 1 ? 's' : ''} you've played with — all will be invited</div>` +
-      playedMembers.map(m => `
-        <div class="member-row">
-          <div class="avatar selected">${getInitials(m.name)}</div>
-          <div class="member-info">
-            <div class="member-name">${m.name}</div>
-            <div class="member-hcp">${m.handicap != null ? 'Handicap: '+m.handicap : 'Member'}</div>
-          </div>
-          <div style="font-size:11px;color:#D4A800;">Played before ✓</div>
-        </div>`).join('');
-  }
-    if (submitted) return;
-    isOpen = !isOpen;
-    document.getElementById('switch').className = 'switch' + (isOpen ? ' on' : '');
-    document.getElementById('toggle-sub').textContent = isOpen ? 'Open — selected members will be notified' : 'Solo session — only you';
-    document.getElementById('open-section').style.display = isOpen ? 'block' : 'none';
-    updateBtn();
-  }
-
-  function updateBtn() {
-    const btn = document.getElementById('main-btn');
-    if (!isOpen) { btn.textContent = 'Confirm booking'; return; }
-
-    if (currentFilter === 'anyone') {
-      const g = guestEmails.length;
-      btn.textContent = 'Open session to all members' + (g > 0 ? ' + ' + g + ' guest' + (g > 1 ? 's' : '') : '');
-      return;
-    }
-
-    if (currentFilter === 'circle') {
-      const circleCount = [...circleIds].length;
-      const g = guestEmails.length;
-      if (circleCount === 0) { btn.textContent = 'Send invites'; return; }
-      btn.textContent = 'Invite my circle (' + circleCount + ' player' + (circleCount > 1 ? 's' : '') + ')' + (g > 0 ? ' + ' + g + ' guest' + (g > 1 ? 's' : '') : '');
-      return;
-    }
-
-    if (currentFilter === 'handicap') {
-      const HOST_HANDICAP = 11;
-      const RANGE = 5;
-      const matched = members.filter(m => m.handicap != null && Math.abs(m.handicap - HOST_HANDICAP) <= RANGE);
-      const g = guestEmails.length;
-      btn.textContent = matched.length > 0 ? 'Invite ' + matched.length + ' matched player' + (matched.length > 1 ? 's' : '') + (g > 0 ? ' + ' + g + ' guest' + (g > 1 ? 's' : '') : '') : 'No matched players found';
-      return;
-    }
-
-    if (currentFilter === 'played') {
-      btn.textContent = 'Invite previous playing partners';
-      return;
-    }
-    const g = guestEmails.length;
-    const total = memberCount + g;
-    btn.textContent = total === 0 ? 'Send invites' : 'Send invites to ' + total + ' player' + (total > 1 ? 's' : '');
-  }
-
-  async function handleSubmit() {
-    if (submitted) return;
-    submitted = true;
-    const btn = document.getElementById('main-btn');
-    btn.disabled = true;
-
-    const today = new Date().toISOString().split('T')[0];
-    const dateLabel = days[new Date().getDay()] + ', ' + months[new Date().getMonth()] + ' ' + new Date().getDate();
-
-    const { data: sessionData, error: sessionError } = await db.from('sessions').insert({
-      facility_id: FACILITY_ID,
-      host_member_id: null,
-      bay_name: BAY_NAME,
-      session_date: today,
-      start_time: '16:00:00',
-      end_time: '17:30:00',
-      is_open: isOpen
-    }).select().single();
-
-    if (sessionError) { showError('Session save failed: ' + sessionError.message); submitted = false; btn.disabled = false; return; }
-
-    if (!isOpen) {
-      showConfirm('Booking confirmed. See you at ' + BAY_NAME + '!');
-      btn.textContent = 'Booked ✓';
-      return;
-    }
-
-    document.getElementById('sending-bar').style.display = 'flex';
-
-    let invitedMembers = [];
-    if (currentFilter === 'anyone') {
-      invitedMembers = members;
-      document.getElementById('sending-text').textContent = 'Opening session to all members...';
-    } else if (currentFilter === 'circle') {
-      invitedMembers = members.filter(m => circleIds.has(m.id));
-      document.getElementById('sending-text').textContent = 'Inviting your circle...';
-    } else if (currentFilter === 'handicap') {
-      const HOST_HANDICAP = 11;
-      const RANGE = 5;
-      invitedMembers = members.filter(m => m.handicap != null && Math.abs(m.handicap - HOST_HANDICAP) <= RANGE);
-      document.getElementById('sending-text').textContent = 'Inviting matched players...';
-    } else if (currentFilter === 'played') {
-      const { data: hostedSessions } = await db.from('sessions').select('id').eq('facility_id', FACILITY_ID);
-      if (hostedSessions && hostedSessions.length > 0) {
-        const sessionIds = hostedSessions.map(s => s.id);
-        const { data: acceptedInvites } = await db.from('invites').select('invited_member_id').in('session_id', sessionIds).eq('status', 'accepted');
-        if (acceptedInvites) {
-          const playedIds = [...new Set(acceptedInvites.map(i => i.invited_member_id))];
-          invitedMembers = members.filter(m => playedIds.includes(m.id));
-        }
-      }
-      document.getElementById('sending-text').textContent = 'Inviting previous playing partners...';
-    } else {
-      invitedMembers = members.filter(m => selected[m.id]);
-    }
-
-    if (invitedMembers.length > 0) {
-      const inviteRows = invitedMembers.map(m => ({ session_id: sessionData.id, invited_member_id: m.id, status: 'pending' }));
-      const { data: inviteData, error: inviteError } = await db.from('invites').insert(inviteRows).select();
-      if (!inviteError && inviteData) {
-        for (let i = 0; i < invitedMembers.length; i++) {
-          const member = invitedMembers[i];
-          const invite = inviteData[i];
-          document.getElementById('sending-text').textContent = `Sending to ${member.name}...`;
-          try {
-            await fetch('/api/send-invite', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                inviteId: invite.id,
-                memberName: member.name,
-                memberEmail: member.email,
-                hostName: HOST_NAME,
-                bayName: BAY_NAME,
-                sessionDate: dateLabel,
-                startTime: formatTime('16:00:00'),
-                endTime: formatTime('17:30:00'),
-                facilityName: FACILITY_NAME
-              })
-            });
-          } catch(e) { console.error('Member email failed:', e); }
-        }
-      }
-    }
-
-    for (const guestEmail of guestEmails) {
-      document.getElementById('sending-text').textContent = `Sending guest invite to ${guestEmail}...`;
-      const { data: guestData } = await db.from('guests').insert({
-        session_id: sessionData.id,
-        email: guestEmail,
-        invited_by: HOST_NAME,
-        facility_id: FACILITY_ID,
-        status: 'pending'
-      }).select().single();
-
-      if (guestData) {
-        try {
-          await fetch('/api/send-guest-invite', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              guestEmail,
-              hostName: HOST_NAME,
-              bayName: BAY_NAME,
-              sessionDate: dateLabel,
-              startTime: formatTime('16:00:00'),
-              endTime: formatTime('17:30:00'),
-              facilityName: FACILITY_NAME,
-              acceptUrl: `https://baybuddy.vercel.app/guest.html?guest=${guestData.id}`
-            })
-          });
-        } catch(e) { console.error('Guest email failed:', e); }
-      }
-    }
-
-    document.getElementById('sending-bar').style.display = 'none';
-
-    if (currentFilter === 'anyone') {
-      showConfirm(`Session is open to all ${invitedMembers.length} members! First 3 to accept get in.`);
-    } else if (currentFilter === 'circle') {
-      showConfirm(`Your circle of ${invitedMembers.length} has been invited! They'll get an email now.`);
-    } else if (currentFilter === 'handicap') {
-      showConfirm(`Invites sent to ${invitedMembers.length} players within ±5 strokes of your handicap!`);
-    } else if (currentFilter === 'played') {
-      showConfirm(`Invites sent to ${invitedMembers.length} player${invitedMembers.length > 1 ? 's' : ''} you've played with before!`);
-    } else {
-      const names = invitedMembers.map(m => m.name).join(', ');
-      const guestNote = guestEmails.length > 0 ? ` + ${guestEmails.length} guest${guestEmails.length > 1 ? 's' : ''}` : '';
-      showConfirm(`Session is open! Invites sent to ${names || ''}${guestNote}.`);
-    }
-    btn.textContent = 'Invites sent ✓';
-  }
-
-  function showConfirm(msg) {
-    const el = document.getElementById('confirm');
-    document.getElementById('confirm-text').textContent = msg;
-    el.style.display = 'flex';
-  }
-
-  function showError(msg) {
-    const el = document.getElementById('error-msg');
-    el.textContent = msg;
-    el.style.display = 'block';
-    submitted = false;
-    document.getElementById('main-btn').disabled = false;
-    document.getElementById('sending-bar').style.display = 'none';
-  }
-
-  loadMembers();
+loadMembers();
 </script>
 </body>
 </html>
