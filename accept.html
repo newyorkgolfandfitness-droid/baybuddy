@@ -182,17 +182,20 @@
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
 
-    if (invite.status !== 'pending') {
-      showResult(invite.status);
+    // Check capacity FIRST before anything else
+    if (totalAccepted >= MAX_PLAYERS && invite.status === 'pending') {
+      showResult('full');
       document.getElementById('btn-group').style.display = 'none';
       document.getElementById('action-label').style.display = 'none';
       return;
     }
 
-    if (totalAccepted >= MAX_PLAYERS) {
-      showResult('full');
+    // Then check if already responded
+    if (invite.status !== 'pending') {
+      showResult(invite.status);
       document.getElementById('btn-group').style.display = 'none';
       document.getElementById('action-label').style.display = 'none';
+      return;
     }
   }
 
@@ -306,11 +309,11 @@
       title.textContent = "You're in!";
       sub.textContent = "See you on the simulator. Have a great round!";
       sub.className = 'result-sub green';
-    } else if (status === 'full') {
+    } else if (status === 'full' || status === 'expired') {
       card.className = 'result-card full';
       icon.textContent = '⛔';
       title.textContent = "Session is full";
-      sub.textContent = "This session has reached capacity — but you can still grab your own bay and play alongside them!";
+      sub.textContent = "This session reached capacity — but you can still grab your own bay and play alongside them!";
       sub.className = 'result-sub gold';
       const bookBtn = document.createElement('a');
       bookBtn.href = 'https://www.newyorkgolfandfitness.com/';
