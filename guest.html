@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guest Invite</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0a; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .card { background: #111; border-radius: 20px; width: 100%; max-width: 440px; overflow: hidden; border: 0.5px solid #222; }
+  .card-header { background: #1a1a1a; padding: 24px; border-bottom: 0.5px solid #2a2a2a; text-align: center; }
+  .facility-name { font-size: 13px; font-weight: 500; color: #D4A800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .invite-title { font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+  .invite-sub { font-size: 14px; color: #666; }
+  .card-body { padding: 28px 24px; }
+  .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .session-field { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 16px; }
+  .field-label { font-size: 11px; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .field-value { font-size: 14px; font-weight: 500; color: #e8e8e8; }
+  .field-value.gold { color: #D4A800; }
+  .fee-notice { background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
+  .fee-text { font-size: 14px; color: #D4A800; line-height: 1.5; }
+  .divider { height: 0.5px; background: #222; margin-bottom: 20px; }
+  .form-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; text-align: center; }
+  .input-group { margin-bottom: 12px; }
+  .input-label { font-size: 11px; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .input { width: 100%; background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 12px 14px; font-size: 14px; color: #e8e8e8; outline: none; }
+  .input:focus { border-color: #D4A800; }
+  .input::placeholder { color: #444; }
+  .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #D4A800; color: #111; margin-bottom: 12px; }
+  .btn:hover { background: #e8b800; }
+  .btn:disabled { background: #2a2a2a; color: #444; cursor: default; }
+  .btn-decline { background: #1a1a1a; color: #888; border: 0.5px solid #2a2a2a; }
+  .btn-decline:hover { background: #222; color: #aaa; }
+  .result-card { border-radius: 12px; padding: 20px; text-align: center; display: none; margin-bottom: 16px; }
+  .result-card.accepted { background: #0f2a1a; border: 0.5px solid #1a5a30; }
+  .result-card.declined { background: #1a1a1a; border: 0.5px solid #2a2a2a; }
+  .result-card.full { background: #2a1a00; border: 0.5px solid #5a3a00; }
+  .result-icon { font-size: 32px; margin-bottom: 10px; }
+  .result-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+  .result-sub { font-size: 13px; color: #666; line-height: 1.5; }
+  .result-sub.green { color: #4ade80; }
+  .result-sub.gold { color: #D4A800; }
+  .book-btn { display: block; width: 100%; padding: 14px; border-radius: 10px; background: #D4A800; color: #111; font-size: 15px; font-weight: 600; text-decoration: none; text-align: center; margin-top: 12px; }
+  .loading-state { text-align: center; padding: 40px 20px; }
+  .loading-spinner { width: 32px; height: 32px; border: 2px solid #222; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: #555; }
+  .error-state { text-align: center; padding: 40px 20px; }
+  .error-text { font-size: 14px; color: #f87171; }
+  .footer { text-align: center; padding: 0 0 20px; font-size: 11px; color: #2a2a2a; }
+  .footer span { color: #3a3a3a; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="facility-name">New York Golf & Fitness</div>
+    <div class="invite-title">You're invited! ⛳</div>
+    <div class="invite-sub" id="header-sub">Someone wants you to come play</div>
+  </div>
+  <div class="card-body">
+    <div id="loading-state" class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading your invite...</div>
+    </div>
+
+    <div id="main-content" style="display:none;">
+      <div class="session-grid">
+        <div class="session-field"><div class="field-label">Bay</div><div class="field-value gold" id="bay-name">—</div></div>
+        <div class="session-field"><div class="field-label">Date</div><div class="field-value" id="session-date">—</div></div>
+        <div class="session-field"><div class="field-label">Start</div><div class="field-value" id="start-time">—</div></div>
+        <div class="session-field"><div class="field-label">End</div><div class="field-value" id="end-time">—</div></div>
+      </div>
+
+      <div class="fee-notice">
+        <div class="fee-text">💰 <strong>Guest fee: $25/hr</strong> — pay when you arrive, no need to prepay. We'll take care of you when you get here!</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div id="result-card" class="result-card">
+        <div class="result-icon" id="result-icon"></div>
+        <div class="result-title" id="result-title"></div>
+        <div class="result-sub" id="result-sub"></div>
+        <a href="https://www.newyorkgolfandfitness.com/" class="book-btn" id="book-btn" style="display:none;">Book your own bay →</a>
+      </div>
+
+      <div id="form-section">
+        <div class="form-label">Fill in your details to confirm</div>
+        <div class="input-group">
+          <div class="input-label">Full Name *</div>
+          <input class="input" id="guest-name" type="text" placeholder="Your full name">
+        </div>
+        <div class="input-group">
+          <div class="input-label">Email *</div>
+          <input class="input" id="guest-email" type="email" placeholder="your@email.com">
+        </div>
+        <div class="input-group">
+          <div class="input-label">Phone</div>
+          <input class="input" id="guest-phone" type="tel" placeholder="(845) 000-0000">
+        </div>
+        <button class="btn" id="btn-accept" onclick="respond('accepted')">I'm in — Let's Play! 🏌️</button>
+        <button class="btn btn-decline" id="btn-decline" onclick="respond('declined')">Can't make it this time</button>
+      </div>
+    </div>
+
+    <div id="error-state" class="error-state" style="display:none;">
+      <div style="font-size:32px;margin-bottom:12px;">⚠️</div>
+      <div class="error-text" id="error-text">This invite could not be found.</div>
+    </div>
+  </div>
+  <div class="footer">Powered by <span>BayBuddy</span></div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let guestId = null;
+  let guestData = null;
+
+  function getParam(name) { return new URLSearchParams(window.location.search).get(name); }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+  }
+
+  function formatTime(timeStr) {
+    const [h, m] = timeStr.split(':');
+    const hour = parseInt(h);
+    return (hour % 12 || 12) + ':' + m + ' ' + (hour >= 12 ? 'PM' : 'AM');
+  }
+
+  async function loadInvite() {
+    guestId = getParam('guest');
+    if (!guestId) { showError('No invite ID found. Please use the link from your email.'); return; }
+
+    const { data: guest, error } = await db.from('guests').select('*, sessions(*)').eq('id', guestId).single();
+    if (error || !guest) { showError('This invite could not be found or has expired.'); return; }
+
+    guestData = guest;
+    const session = guest.sessions;
+
+    document.getElementById('header-sub').textContent = guest.invited_by + ' wants you to come play!';
+    document.getElementById('bay-name').textContent = session.bay_name;
+    document.getElementById('session-date').textContent = formatDate(session.session_date);
+    document.getElementById('start-time').textContent = formatTime(session.start_time);
+    document.getElementById('end-time').textContent = formatTime(session.end_time);
+
+    if (guest.email) document.getElementById('guest-email').value = guest.email;
+
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+
+    if (guest.status !== 'pending') {
+      showResult(guest.status);
+      document.getElementById('form-section').style.display = 'none';
+    }
+  }
+
+  async function respond(status) {
+    document.getElementById('btn-accept').disabled = true;
+    document.getElementById('btn-decline').disabled = true;
+
+    if (status === 'accepted') {
+      const name = document.getElementById('guest-name').value.trim();
+      const email = document.getElementById('guest-email').value.trim();
+      const phone = document.getElementById('guest-phone').value.trim();
+
+      if (!name || !email) {
+        alert('Please enter your full name and email to confirm.');
+        document.getElementById('btn-accept').disabled = false;
+        document.getElementById('btn-decline').disabled = false;
+        return;
+      }
+
+      const { error } = await db.from('guests').update({
+        full_name: name,
+        email: email,
+        phone: phone,
+        status: 'accepted'
+      }).eq('id', guestId);
+
+      if (error) {
+        alert('Something went wrong. Please try again.');
+        document.getElementById('btn-accept').disabled = false;
+        document.getElementById('btn-decline').disabled = false;
+        return;
+      }
+
+      await fetch('/api/notify-facility', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberName: name + ' (Guest)',
+          hostName: guestData.invited_by,
+          bayName: guestData.sessions.bay_name,
+          sessionDate: formatDate(guestData.sessions.session_date),
+          startTime: formatTime(guestData.sessions.start_time),
+          status: 'accepted',
+          facilityName: 'New York Golf & Fitness',
+          currentCount: 1,
+          maxPlayers: 4,
+          guestPhone: phone,
+          guestEmail: email,
+          isGuest: true
+        })
+      });
+
+    } else {
+      await db.from('guests').update({ status: 'declined' }).eq('id', guestId);
+    }
+
+    document.getElementById('form-section').style.display = 'none';
+    showResult(status);
+  }
+
+  function showResult(status) {
+    const card = document.getElementById('result-card');
+    const icon = document.getElementById('result-icon');
+    const title = document.getElementById('result-title');
+    const sub = document.getElementById('result-sub');
+    const bookBtn = document.getElementById('book-btn');
+    card.style.display = 'block';
+
+    if (status === 'accepted') {
+      card.className = 'result-card accepted';
+      icon.textContent = '⛳';
+      title.textContent = "You're in! See you soon.";
+      sub.textContent = "We can't wait to have you. Remember — guest fee is $25/hr, collected when you arrive. Have an amazing round!";
+      sub.className = 'result-sub green';
+    } else if (status === 'full') {
+      card.className = 'result-card full';
+      icon.textContent = '⛔';
+      title.textContent = "Session is full";
+      sub.textContent = "This session has reached capacity but you can still book your own bay!";
+      sub.className = 'result-sub gold';
+      bookBtn.style.display = 'block';
+    } else {
+      card.className = 'result-card declined';
+      icon.textContent = '👋';
+      title.textContent = "Maybe next time!";
+      sub.textContent = "No worries — hope to see you on the simulator soon. You can always book your own session.";
+      sub.className = 'result-sub';
+      bookBtn.style.display = 'block';
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').style.display = 'block';
+    document.getElementById('error-text').textContent = msg;
+  }
+
+  loadInvite();
+</script>
+</body>
+</html>
