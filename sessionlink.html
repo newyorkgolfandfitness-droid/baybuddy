@@ -124,7 +124,7 @@
           <div class="chip active" id="chip-specific" onclick="setFilter('specific')">Specific People</div>
           <div class="chip" id="chip-anyone" onclick="setFilter('anyone')">Anyone</div>
           <div class="chip" id="chip-circle" onclick="setFilter('circle')">My Circle</div>
-          <div class="chip soon" id="chip-handicap">Similar Handicap <span class="soon-badge">Soon</span></div>
+          <div class="chip" id="chip-handicap" onclick="setFilter('handicap')">Similar Handicap</div>
           <div class="chip soon" id="chip-played">Played Before <span class="soon-badge">Soon</span></div>
         </div>
       </div>
@@ -175,8 +175,11 @@
 
       <!-- Coming soon modes -->
       <div id="mode-handicap" style="display:none;">
-        <div class="notice-box gold">
-          <div class="notice-text">⛳ <strong>Similar Handicap</strong> — automatically invite members within 4 strokes of your handicap. Coming soon!</div>
+        <div class="notice-box gold" style="margin-bottom:12px;">
+          <div class="notice-text">⛳ Showing members within <strong>±5 strokes</strong> of your handicap (11). All matched members will be invited.</div>
+        </div>
+        <div class="invite-panel" id="handicap-list">
+          <div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading...</div>
         </div>
       </div>
       <div id="mode-played" style="display:none;">
@@ -356,7 +359,7 @@
   }
 
   function setFilter(filter) {
-    const soon = ['handicap', 'played'];
+    const soon = ['played'];
     if (soon.includes(filter)) return;
 
     currentFilter = filter;
@@ -368,7 +371,30 @@
       const mode = document.getElementById('mode-' + f);
       if (mode) mode.style.display = f === filter ? 'block' : 'none';
     });
+
+    if (filter === 'handicap') renderHandicapList();
     updateBtn();
+  }
+
+  function renderHandicapList() {
+    const HOST_HANDICAP = 11;
+    const RANGE = 5;
+    const matched = members.filter(m => m.handicap != null && Math.abs(m.handicap - HOST_HANDICAP) <= RANGE);
+    const list = document.getElementById('handicap-list');
+    if (!matched.length) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found within ±5 strokes</div>';
+      return;
+    }
+    list.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${matched.length} member${matched.length > 1 ? 's' : ''} matched — all will be invited</div>` +
+      matched.map(m => `
+        <div class="member-row">
+          <div class="avatar selected">${getInitials(m.name)}</div>
+          <div class="member-info">
+            <div class="member-name">${m.name}</div>
+            <div class="member-hcp">Handicap: ${m.handicap} (${Math.abs(m.handicap - HOST_HANDICAP) === 0 ? 'same' : (m.handicap < HOST_HANDICAP ? '-' : '+') + Math.abs(m.handicap - HOST_HANDICAP)} strokes)</div>
+          </div>
+          <div style="font-size:11px;color:#D4A800;">✓ Matched</div>
+        </div>`).join('');
   }
 
   function toggleMember(id) {
@@ -440,6 +466,15 @@
       return;
     }
 
+    if (currentFilter === 'handicap') {
+      const HOST_HANDICAP = 11;
+      const RANGE = 5;
+      const matched = members.filter(m => m.handicap != null && Math.abs(m.handicap - HOST_HANDICAP) <= RANGE);
+      const g = guestEmails.length;
+      btn.textContent = matched.length > 0 ? 'Invite ' + matched.length + ' matched player' + (matched.length > 1 ? 's' : '') + (g > 0 ? ' + ' + g + ' guest' + (g > 1 ? 's' : '') : '') : 'No matched players found';
+      return;
+    }
+
     const memberCount = Object.values(selected).filter(Boolean).length;
     const g = guestEmails.length;
     const total = memberCount + g;
@@ -482,6 +517,11 @@
     } else if (currentFilter === 'circle') {
       invitedMembers = members.filter(m => circleIds.has(m.id));
       document.getElementById('sending-text').textContent = 'Inviting your circle...';
+    } else if (currentFilter === 'handicap') {
+      const HOST_HANDICAP = 11;
+      const RANGE = 5;
+      invitedMembers = members.filter(m => m.handicap != null && Math.abs(m.handicap - HOST_HANDICAP) <= RANGE);
+      document.getElementById('sending-text').textContent = 'Inviting matched players...';
     } else {
       invitedMembers = members.filter(m => selected[m.id]);
     }
@@ -551,6 +591,8 @@
       showConfirm(`Session is open to all ${invitedMembers.length} members! First 3 to accept get in.`);
     } else if (currentFilter === 'circle') {
       showConfirm(`Your circle of ${invitedMembers.length} has been invited! They'll get an email now.`);
+    } else if (currentFilter === 'handicap') {
+      showConfirm(`Invites sent to ${invitedMembers.length} players within ±5 strokes of your handicap!`);
     } else {
       const names = invitedMembers.map(m => m.name).join(', ');
       const guestNote = guestEmails.length > 0 ? ` + ${guestEmails.length} guest${guestEmails.length > 1 ? 's' : ''}` : '';
