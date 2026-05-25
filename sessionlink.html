@@ -270,12 +270,14 @@ async function loadMembers() {
 function renderMemberList() {
   const el = document.getElementById('member-list');
   if (!members.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
-  el.innerHTML = members.map(m=>`
-    <div class="member-row" onclick="toggleMember('${m.id}')">
-      <div class="avatar" id="av-${m.id}">${initials(m.name)}</div>
-      <div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div>
-      <div class="checkbox" id="cb-${m.id}"></div>
-    </div>`).join('');
+  el.innerHTML = members.map(function(m) {
+    var mid = m.wix_id || m.id;
+    return '<div class="member-row" onclick="toggleMember(\''+mid+'\')">'+
+      '<div class="avatar" id="av-'+mid+'">'+initials(m.name)+'</div>'+
+      '<div class="member-info"><div class="member-name">'+m.name+'</div><div class="member-hcp">'+(m.handicap!=null?'Handicap: '+m.handicap:'Member')+'</div></div>'+
+      '<div class="checkbox" id="cb-'+mid+'"></div>'+
+    '</div>';
+  }).join('');
 }
 
 function toggleMember(id) {
@@ -291,13 +293,13 @@ function toggleMember(id) {
 function saveCircle() { localStorage.setItem('bb_circle_'+FACILITY_ID, JSON.stringify([...circleIds])); }
 
 function toggleCircleMember(id) {
-  if (circleIds.has(id)) circleIds.delete(id); else circleIds.add(id);
+  if (circleIds.has(id)) { circleIds.delete(id); } else { circleIds.add(id); }
   saveCircle(); renderManageList(); renderCircleList(); updateBtn();
 }
 
 function renderCircleList() {
   const el = document.getElementById('circle-list');
-  const cm = members.filter(m=>circleIds.has(m.id));
+  const cm = members.filter(function(m) { return circleIds.has(m.wix_id||m.id); });
   if (!cm.length) {
     el.innerHTML='<div class="circle-empty"><div>Your circle is empty</div><button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button></div>';
     return;
@@ -310,7 +312,7 @@ function renderCircleList() {
 function renderManageList() {
   const el = document.getElementById('manage-list');
   el.innerHTML = members.map(m=>{
-    const inc = circleIds.has(m.id);
+    const inc = circleIds.has(m.wix_id||m.id);
     return `<div class="member-row no-cursor"><div class="avatar ${inc?'circle-av':''}">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><button class="circle-btn ${inc?'in':''}" onclick="toggleCircleMember('${m.id}')">${inc?'✓':'+'}</button></div>`;
   }).join('');
 }
@@ -421,7 +423,7 @@ function updateBtn() {
 // ── Send invites ──────────────────────────────────────────────
 async function sendMemberInvites(sessionId, invitedMembers, dateLabel) {
   if (!invitedMembers.length) return;
-  const rows = invitedMembers.map(m=>({session_id:sessionId,invited_member_id:m.id,status:'pending'}));
+  const rows = invitedMembers.map(function(m) { return {session_id:sessionId,invited_member_id:null,wix_member_id:m.wix_id||m.id,status:'pending'}; });
   const {data:inviteData,error} = await db.from('invites').insert(rows).select();
   if (error||!inviteData) return;
   for (let i=0;i<invitedMembers.length;i++) {
@@ -476,7 +478,7 @@ async function handleSubmit() {
   if (currentFilter==='anyone') {
     invited=members;
   } else if (currentFilter==='circle') {
-    invited=members.filter(m=>circleIds.has(m.id));
+    invited=members.filter(function(m) { return circleIds.has(m.wix_id||m.id); });
   } else if (currentFilter==='handicap') {
     invited=members.filter(m=>m.handicap!=null&&Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE);
   } else if (currentFilter==='played') {
@@ -487,7 +489,7 @@ async function handleSubmit() {
       if (pinv) { const pids=[...new Set(pinv.map(i=>i.invited_member_id))]; invited=members.filter(m=>pids.includes(m.id)); }
     }
   } else {
-    invited=members.filter(m=>selected[m.id]);
+    invited=members.filter(function(m) { return selected[m.wix_id||m.id]; });
   }
 
   await sendMemberInvites(sess.id, invited, dateLabel);
