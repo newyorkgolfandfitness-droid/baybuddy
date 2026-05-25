@@ -252,9 +252,16 @@ function initials(name) { return name.split(' ').map(w=>w[0]).join('').substring
 
 // ── Load members ──────────────────────────────────────────────
 async function loadMembers() {
-  const {data,error} = await db.from('members').select('*').eq('facility_id',FACILITY_ID).neq('name',HOST_NAME);
-  if (error) { document.getElementById('member-list').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load</div>'; return; }
-  members = data;
+  try {
+    const response = await fetch('https://www.newyorkgolfandfitness.com/_functions/members');
+    const data = await response.json();
+    const allMembers = data.members || [];
+    members = allMembers.filter(function(m) { return m.name !== HOST_NAME && m.wix_id !== HOST_MEMBER_ID; });
+  } catch(e) {
+    console.error('Wix fetch failed, using Supabase fallback:', e);
+    const result = await db.from('members').select('*').eq('facility_id',FACILITY_ID).neq('name',HOST_NAME);
+    if (!result.error) members = result.data || [];
+  }
   const saved = localStorage.getItem('bb_circle_'+FACILITY_ID);
   if (saved) circleIds = new Set(JSON.parse(saved));
   renderMemberList();
