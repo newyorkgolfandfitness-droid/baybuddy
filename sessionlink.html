@@ -213,6 +213,7 @@ const HOST_NAME = p('member', 'Member');
 const HOST_MEMBER_ID = p('memberid', '');
 const BAY_NAME = p('bay', '');
 const SESSION_DATE_PARAM = p('date', null);
+const SESSION_ENDDATE_PARAM = p('enddate', null);
 const HOST_HANDICAP = parseInt(p('handicap', '11'));
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -228,33 +229,31 @@ let submitted = false;
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-// Set member display
 document.getElementById('member-display').textContent = HOST_NAME;
-
-// Set bay display
 document.getElementById('bay-display').textContent = BAY_NAME || '—';
+document.getElementById('hcp-display').textContent = HOST_HANDICAP;
 
-// Set date and time display from the ISO datetime param
 if (SESSION_DATE_PARAM) {
   const st = new Date(SESSION_DATE_PARAM);
-  // Date
   document.getElementById('session-date').textContent = MONTHS[st.getMonth()] + ' ' + st.getDate() + ', ' + st.getFullYear();
-  // Start time
   const shr = st.getHours(), smn = String(st.getMinutes()).padStart(2, '0');
   const startStr = (shr % 12 || 12) + ':' + smn + ' ' + (shr >= 12 ? 'PM' : 'AM');
-  // End time = start + 90 min
-  const et = new Date(st.getTime() + 90 * 60 * 1000);
-  const ehr = et.getHours(), emn = String(et.getMinutes()).padStart(2, '0');
-  const endStr = (ehr % 12 || 12) + ':' + emn + ' ' + (ehr >= 12 ? 'PM' : 'AM');
+  let endStr;
+  if (SESSION_ENDDATE_PARAM) {
+    const et = new Date(SESSION_ENDDATE_PARAM);
+    const ehr = et.getHours(), emn = String(et.getMinutes()).padStart(2, '0');
+    endStr = (ehr % 12 || 12) + ':' + emn + ' ' + (ehr >= 12 ? 'PM' : 'AM');
+  } else {
+    const et = new Date(st.getTime() + 90 * 60 * 1000);
+    const ehr = et.getHours(), emn = String(et.getMinutes()).padStart(2, '0');
+    endStr = (ehr % 12 || 12) + ':' + emn + ' ' + (ehr >= 12 ? 'PM' : 'AM');
+  }
   document.getElementById('session-time').textContent = startStr + ' – ' + endStr;
 } else {
   const now = new Date();
   document.getElementById('session-date').textContent = MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
   document.getElementById('session-time').textContent = '—';
 }
-
-// Update handicap display
-document.getElementById('hcp-display').textContent = HOST_HANDICAP;
 
 function fmtTime(isoStr) {
   const d = new Date(isoStr);
@@ -264,7 +263,6 @@ function fmtTime(isoStr) {
 
 function initials(name) { return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 
-// ── Load members ──────────────────────────────────────────────
 async function loadMembers() {
   const {data,error} = await db.from('members').select('*').eq('facility_id',FACILITY_ID).neq('name',HOST_NAME);
   if (error) { document.getElementById('member-list').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load</div>'; return; }
@@ -294,7 +292,6 @@ function toggleMember(id) {
   updateBtn();
 }
 
-// ── Circle ────────────────────────────────────────────────────
 function saveCircle() { localStorage.setItem('bb_circle_'+FACILITY_ID, JSON.stringify([...circleIds])); }
 
 function toggleCircleMember(id) {
@@ -334,7 +331,6 @@ function hideManageCircle() {
   renderCircleList(); updateBtn();
 }
 
-// ── Handicap filter ───────────────────────────────────────────
 function renderHandicapList() {
   const matched = members.filter(m=>m.handicap!=null && Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE);
   const el = document.getElementById('handicap-list');
@@ -347,7 +343,6 @@ function renderHandicapList() {
     }).join('');
 }
 
-// ── Played before filter ──────────────────────────────────────
 async function renderPlayedList() {
   const el = document.getElementById('played-list');
   el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading session history...</div>';
@@ -363,7 +358,6 @@ async function renderPlayedList() {
     + played.map(m=>`<div class="member-row no-cursor"><div class="avatar selected">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><div style="font-size:11px;color:#D4A800;">Played before ✓</div></div>`).join('');
 }
 
-// ── Filter switching ──────────────────────────────────────────
 function setFilter(f) {
   currentFilter = f;
   ['specific','anyone','circle','handicap','played'].forEach(k=>{
@@ -376,7 +370,6 @@ function setFilter(f) {
   updateBtn();
 }
 
-// ── Toggle open ───────────────────────────────────────────────
 function toggleOpen() {
   if (submitted) return;
   isOpen = !isOpen;
@@ -386,7 +379,6 @@ function toggleOpen() {
   updateBtn();
 }
 
-// ── Guest ─────────────────────────────────────────────────────
 function addGuest() {
   const inp = document.getElementById('guest-email-input');
   const email = inp.value.trim();
@@ -405,7 +397,6 @@ function renderGuestList() {
     <div class="guest-tag"><span>✉️</span><span class="guest-tag-email">${e}</span><button class="guest-tag-remove" onclick="removeGuest('${e}')">×</button></div>`).join('');
 }
 
-// ── Update button ─────────────────────────────────────────────
 function updateBtn() {
   const btn = document.getElementById('main-btn');
   if (!isOpen) { btn.textContent='Confirm booking'; return; }
@@ -425,7 +416,6 @@ function updateBtn() {
   btn.textContent = (n+g)===0?'Send invites':'Send invites to '+(n+g)+' player'+((n+g)>1?'s':'');
 }
 
-// ── Send invites ──────────────────────────────────────────────
 async function sendMemberInvites(sessionId, invitedMembers, dateLabel) {
   if (!invitedMembers.length) return;
   const rows = invitedMembers.map(m=>({session_id:sessionId,invited_member_id:m.id,status:'pending'}));
@@ -439,7 +429,7 @@ async function sendMemberInvites(sessionId, invitedMembers, dateLabel) {
         inviteId:inv.id,memberName:m.name,memberEmail:m.email,hostName:HOST_NAME,bayName:BAY_NAME,
         sessionDate:dateLabel,
         startTime: SESSION_DATE_PARAM ? fmtTime(SESSION_DATE_PARAM) : '4:00 PM',
-        endTime: SESSION_DATE_PARAM ? fmtTime(new Date(new Date(SESSION_DATE_PARAM).getTime()+90*60*1000).toISOString()) : '5:30 PM',
+        endTime: SESSION_ENDDATE_PARAM ? fmtTime(SESSION_ENDDATE_PARAM) : '5:30 PM',
         facilityName:FACILITY_NAME
       })});
     } catch(e) { console.error(e); }
@@ -455,7 +445,7 @@ async function sendGuestInvites(sessionId, dateLabel) {
         await fetch('/api/send-guest-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
           guestEmail:email,hostName:HOST_NAME,bayName:BAY_NAME,sessionDate:dateLabel,
           startTime: SESSION_DATE_PARAM ? fmtTime(SESSION_DATE_PARAM) : '4:00 PM',
-          endTime: SESSION_DATE_PARAM ? fmtTime(new Date(new Date(SESSION_DATE_PARAM).getTime()+90*60*1000).toISOString()) : '5:30 PM',
+          endTime: SESSION_ENDDATE_PARAM ? fmtTime(SESSION_ENDDATE_PARAM) : '5:30 PM',
           facilityName:FACILITY_NAME,
           acceptUrl:'https://baybuddy.vercel.app/guest.html?guest='+gd.id
         })});
@@ -472,7 +462,7 @@ async function handleSubmit() {
 
   const sessionDateStr = SESSION_DATE_PARAM ? new Date(SESSION_DATE_PARAM).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
   const startTimeStr = SESSION_DATE_PARAM ? new Date(SESSION_DATE_PARAM).toTimeString().substring(0,8) : '16:00:00';
-  const endTimeStr = SESSION_DATE_PARAM ? new Date(new Date(SESSION_DATE_PARAM).getTime()+90*60*1000).toTimeString().substring(0,8) : '17:30:00';
+  const endTimeStr = SESSION_ENDDATE_PARAM ? new Date(SESSION_ENDDATE_PARAM).toTimeString().substring(0,8) : (SESSION_DATE_PARAM ? new Date(new Date(SESSION_DATE_PARAM).getTime()+90*60*1000).toTimeString().substring(0,8) : '17:30:00');
   const now = new Date(SESSION_DATE_PARAM || new Date());
   const dateLabel = DAYS[now.getDay()]+', '+MONTHS[now.getMonth()]+' '+now.getDate();
 
