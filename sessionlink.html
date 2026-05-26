@@ -42,4 +42,495 @@
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #888; flex-shrink: 0; transition: all 0.15s; }
   .avatar.selected { background: #3a2e00; color: #D4A800; }
   .avatar.circle-av { background: #001f3f; color: #60a5fa; }
-  .member-info
+  .member-info { flex: 1; }
+  .member-name { font-size: 14px; color: #ccc; }
+  .member-hcp { font-size: 12px; color: #555; }
+  .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 12px; }
+  .checkbox.checked { background: #D4A800; border-color: #D4A800; color: #111; }
+  .circle-btn { width: 22px; height: 22px; border-radius: 50%; border: 0.5px solid #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; cursor: pointer; background: none; transition: all 0.15s; }
+  .circle-btn.in { background: #60a5fa; border-color: #60a5fa; color: #111; }
+  .manage-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .manage-title { font-size: 13px; font-weight: 600; color: #e8e8e8; }
+  .manage-close { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; }
+  .manage-close:hover { color: #e8e8e8; }
+  .manage-btn { background: none; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #888; cursor: pointer; }
+  .manage-btn:hover { border-color: #60a5fa; color: #60a5fa; }
+  .circle-empty { text-align: center; padding: 20px; font-size: 13px; color: #555; }
+  .circle-empty-btn { display: inline-block; margin-top: 10px; padding: 8px 16px; background: none; border: 0.5px solid #D4A800; border-radius: 8px; font-size: 12px; color: #D4A800; cursor: pointer; }
+  .guest-panel { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
+  .guest-title { font-size: 13px; font-weight: 500; color: #e8e8e8; margin-bottom: 4px; }
+  .guest-sub { font-size: 12px; color: #555; margin-bottom: 16px; }
+  .guest-input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .guest-input { flex: 1; background: #111; border: 0.5px solid #333; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #e8e8e8; outline: none; }
+  .guest-input:focus { border-color: #D4A800; }
+  .guest-input::placeholder { color: #444; }
+  .add-guest-btn { background: none; border: 0.5px solid #D4A800; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #D4A800; cursor: pointer; }
+  .add-guest-btn:hover { background: #1f1f00; }
+  .guest-tag { display: flex; align-items: center; gap: 8px; background: #1f1f00; border: 0.5px solid #3a3000; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
+  .guest-tag-email { font-size: 13px; color: #D4A800; flex: 1; }
+  .guest-tag-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 16px; padding: 0; }
+  .guest-tag-remove:hover { color: #f87171; }
+  .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #D4A800; color: #111; }
+  .btn:hover { background: #e8b800; }
+  .btn:disabled { background: #2a2a2a; color: #444; cursor: default; }
+  .confirm { background: #0f2a1a; border: 0.5px solid #1a5a30; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; align-items: flex-start; gap: 10px; }
+  .confirm-text { font-size: 13px; color: #4ade80; line-height: 1.5; }
+  .error-msg { background: #2a0f0f; border: 0.5px solid #5a1a1a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; font-size: 13px; color: #f87171; }
+  .sending-bar { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: none; align-items: center; gap: 12px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid #333; border-top-color: #D4A800; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .sending-text { font-size: 13px; color: #666; }
+  .divider { height: 0.5px; background: #2a2a2a; margin-bottom: 20px; }
+  .footer { text-align: center; margin-top: 16px; font-size: 11px; color: #333; }
+</style>
+</head>
+<body>
+<div class="widget">
+  <div class="header">
+    <div><div class="logo">BayBuddy</div><div class="tagline">Play better together</div></div>
+    <div class="live-badge">● Live</div>
+  </div>
+  <div class="body">
+    <div class="section-label">Your session</div>
+    <div class="session-card">
+      <div><div class="field-label">Bay</div><div class="field-value gold" id="bay-display">—</div></div>
+      <div><div class="field-label">Member</div><div class="field-value" id="member-display">—</div></div>
+      <div><div class="field-label">Date</div><div class="field-value" id="session-date">—</div></div>
+      <div><div class="field-label">Time</div><div class="field-value" id="session-time">—</div></div>
+    </div>
+
+    <div class="section-label">Session type</div>
+    <div class="toggle-row" id="toggle-row" onclick="toggleOpen()">
+      <div>
+        <div class="toggle-label">Open this session to others</div>
+        <div class="toggle-sub" id="toggle-sub">Solo session — only you</div>
+      </div>
+      <div class="switch" id="sw"><div class="switch-knob"></div></div>
+    </div>
+
+    <div id="open-section" style="display:none;">
+      <div class="filter-section">
+        <div class="filter-label">Who can join?</div>
+        <div class="filter-chips">
+          <div class="chip active" id="chip-specific" onclick="setFilter('specific')">Specific People</div>
+          <div class="chip" id="chip-anyone" onclick="setFilter('anyone')">Anyone</div>
+          <div class="chip" id="chip-circle" onclick="setFilter('circle')">My Circle</div>
+          <div class="chip" id="chip-handicap" onclick="setFilter('handicap')">Similar Handicap</div>
+          <div class="chip" id="chip-played" onclick="setFilter('played')">Played Before</div>
+        </div>
+      </div>
+
+      <div id="mode-specific">
+        <div class="section-label">Invite members</div>
+        <div class="invite-panel">
+          <div class="invite-hint">Select members from your facility</div>
+          <div id="member-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading members...</div></div>
+        </div>
+      </div>
+
+      <div id="mode-anyone" style="display:none;">
+        <div class="notice-box">
+          <div class="notice-text">🏌️ <strong>Open to everyone</strong> — all facility members will receive an invite and can join on a first-come, first-served basis until the bay is full.</div>
+        </div>
+      </div>
+
+      <div id="mode-circle" style="display:none;">
+        <div id="circle-invite-view">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div class="section-label" style="margin-bottom:0;">My Circle</div>
+            <button class="manage-btn" onclick="showManageCircle()">⚙ Manage</button>
+          </div>
+          <div class="invite-panel" id="circle-list">
+            <div class="circle-empty">
+              <div>Your circle is empty</div>
+              <button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button>
+            </div>
+          </div>
+        </div>
+        <div id="circle-manage-view" style="display:none;">
+          <div class="invite-panel">
+            <div class="manage-header">
+              <div class="manage-title">👥 Manage My Circle</div>
+              <button class="manage-close" onclick="hideManageCircle()">✕</button>
+            </div>
+            <div style="font-size:12px;color:#555;margin-bottom:14px;">Tap + to add or ✓ to remove from your circle.</div>
+            <div id="manage-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mode-handicap" style="display:none;">
+        <div class="notice-box" style="margin-bottom:12px;">
+          <div class="notice-text">⛳ Showing members within <strong>±5 strokes</strong> of your handicap (<span id="hcp-display">11</span>). All matched members will be invited.</div>
+        </div>
+        <div class="invite-panel" id="handicap-list"></div>
+      </div>
+
+      <div id="mode-played" style="display:none;">
+        <div class="notice-box" style="margin-bottom:12px;">
+          <div class="notice-text">🔄 Members you've played with before — based on your session history.</div>
+        </div>
+        <div class="invite-panel" id="played-list"><div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading...</div></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">Invite a guest</div>
+      <div class="guest-panel">
+        <div class="guest-title">Not a member yet?</div>
+        <div class="guest-sub">Enter their email to send a guest invite. $25/hr fee collected at the facility.</div>
+        <div class="guest-input-row">
+          <input class="guest-input" id="guest-email-input" type="email" placeholder="Guest email address">
+          <button class="add-guest-btn" onclick="addGuest()">+ Add</button>
+        </div>
+        <div id="guest-list"></div>
+      </div>
+    </div>
+
+    <div class="sending-bar" id="sending-bar">
+      <div class="spinner"></div>
+      <div class="sending-text" id="sending-text">Sending invites...</div>
+    </div>
+    <div class="confirm" id="confirm">
+      <div class="confirm-text" id="confirm-text"></div>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+    <button class="btn" id="main-btn" onclick="handleSubmit()">Confirm booking</button>
+    <div class="footer">Powered by BayBuddy</div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://bdedqplcpjlesgqotllm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZWRxcGxjcGpsZXNncW90bGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjM0MDgsImV4cCI6MjA5NDkzOTQwOH0.BlvMj0NUJAbAFGatsnTF0n0_Fr0zABG9BrN-fh0KEZI';
+const FACILITY_ID = '00000000-0000-0000-0000-000000000001';
+const FACILITY_NAME = 'New York Golf & Fitness';
+const HANDICAP_RANGE = 5;
+
+function p(name, def) { return new URLSearchParams(window.location.search).get(name) || def; }
+
+const HOST_NAME = p('member', 'Member');
+const HOST_MEMBER_ID = p('memberid', '');
+const BAY_NAME = p('bay', '');
+const SESSION_DATE_PARAM = p('date', null);
+const HOST_HANDICAP = parseInt(p('handicap', '11'));
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let isOpen = false;
+let currentFilter = 'specific';
+let members = [];
+let selected = {};
+let circleIds = new Set();
+let guestEmails = [];
+let submitted = false;
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// Set member display
+document.getElementById('member-display').textContent = HOST_NAME;
+
+// Set bay display
+document.getElementById('bay-display').textContent = BAY_NAME || '—';
+
+// Set date and time display from the ISO datetime param
+if (SESSION_DATE_PARAM) {
+  const st = new Date(SESSION_DATE_PARAM);
+  // Date
+  document.getElementById('session-date').textContent = MONTHS[st.getMonth()] + ' ' + st.getDate() + ', ' + st.getFullYear();
+  // Start time
+  const shr = st.getHours(), smn = String(st.getMinutes()).padStart(2, '0');
+  const startStr = (shr % 12 || 12) + ':' + smn + ' ' + (shr >= 12 ? 'PM' : 'AM');
+  // End time = start + 90 min
+  const et = new Date(st.getTime() + 90 * 60 * 1000);
+  const ehr = et.getHours(), emn = String(et.getMinutes()).padStart(2, '0');
+  const endStr = (ehr % 12 || 12) + ':' + emn + ' ' + (ehr >= 12 ? 'PM' : 'AM');
+  document.getElementById('session-time').textContent = startStr + ' – ' + endStr;
+} else {
+  const now = new Date();
+  document.getElementById('session-date').textContent = MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  document.getElementById('session-time').textContent = '—';
+}
+
+// Update handicap display
+document.getElementById('hcp-display').textContent = HOST_HANDICAP;
+
+function fmtTime(isoStr) {
+  const d = new Date(isoStr);
+  const h = d.getHours(), m = String(d.getMinutes()).padStart(2,'0');
+  return (h%12||12)+':'+m+' '+(h>=12?'PM':'AM');
+}
+
+function initials(name) { return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+
+// ── Load members ──────────────────────────────────────────────
+async function loadMembers() {
+  const {data,error} = await db.from('members').select('*').eq('facility_id',FACILITY_ID).neq('name',HOST_NAME);
+  if (error) { document.getElementById('member-list').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load</div>'; return; }
+  members = data;
+  const saved = localStorage.getItem('bb_circle_'+FACILITY_ID);
+  if (saved) circleIds = new Set(JSON.parse(saved));
+  renderMemberList();
+}
+
+function renderMemberList() {
+  const el = document.getElementById('member-list');
+  if (!members.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members found</div>'; return; }
+  el.innerHTML = members.map(m=>`
+    <div class="member-row" onclick="toggleMember('${m.id}')">
+      <div class="avatar" id="av-${m.id}">${initials(m.name)}</div>
+      <div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div>
+      <div class="checkbox" id="cb-${m.id}"></div>
+    </div>`).join('');
+}
+
+function toggleMember(id) {
+  if (submitted) return;
+  selected[id] = !selected[id];
+  document.getElementById('cb-'+id).className = 'checkbox'+(selected[id]?' checked':'');
+  document.getElementById('cb-'+id).textContent = selected[id]?'✓':'';
+  document.getElementById('av-'+id).className = 'avatar'+(selected[id]?' selected':'');
+  updateBtn();
+}
+
+// ── Circle ────────────────────────────────────────────────────
+function saveCircle() { localStorage.setItem('bb_circle_'+FACILITY_ID, JSON.stringify([...circleIds])); }
+
+function toggleCircleMember(id) {
+  if (circleIds.has(id)) circleIds.delete(id); else circleIds.add(id);
+  saveCircle(); renderManageList(); renderCircleList(); updateBtn();
+}
+
+function renderCircleList() {
+  const el = document.getElementById('circle-list');
+  const cm = members.filter(m=>circleIds.has(m.id));
+  if (!cm.length) {
+    el.innerHTML='<div class="circle-empty"><div>Your circle is empty</div><button class="circle-empty-btn" onclick="showManageCircle()">+ Add playing partners</button></div>';
+    return;
+  }
+  el.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${cm.length} regular partner${cm.length>1?'s':''} — all will be invited</div>`
+    + cm.map(m=>`<div class="member-row no-cursor"><div class="avatar circle-av">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><div style="font-size:11px;color:#60a5fa;">In circle ✓</div></div>`).join('')
+    + `<button style="margin-top:12px;background:none;border:none;font-size:12px;color:#555;cursor:pointer;" onclick="showManageCircle()">⚙ Edit circle</button>`;
+}
+
+function renderManageList() {
+  const el = document.getElementById('manage-list');
+  el.innerHTML = members.map(m=>{
+    const inc = circleIds.has(m.id);
+    return `<div class="member-row no-cursor"><div class="avatar ${inc?'circle-av':''}">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><button class="circle-btn ${inc?'in':''}" onclick="toggleCircleMember('${m.id}')">${inc?'✓':'+'}</button></div>`;
+  }).join('');
+}
+
+function showManageCircle() {
+  document.getElementById('circle-invite-view').style.display='none';
+  document.getElementById('circle-manage-view').style.display='block';
+  renderManageList();
+}
+
+function hideManageCircle() {
+  document.getElementById('circle-manage-view').style.display='none';
+  document.getElementById('circle-invite-view').style.display='block';
+  renderCircleList(); updateBtn();
+}
+
+// ── Handicap filter ───────────────────────────────────────────
+function renderHandicapList() {
+  const matched = members.filter(m=>m.handicap!=null && Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE);
+  const el = document.getElementById('handicap-list');
+  if (!matched.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No members within ±5 strokes</div>'; return; }
+  el.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${matched.length} member${matched.length>1?'s':''} matched — all will be invited</div>`
+    + matched.map(m=>{
+      const diff = m.handicap - HOST_HANDICAP;
+      const label = diff===0?'same':(diff<0?diff:'+'+diff)+' strokes';
+      return `<div class="member-row no-cursor"><div class="avatar selected">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">Handicap: ${m.handicap} (${label})</div></div><div style="font-size:11px;color:#D4A800;">✓ Matched</div></div>`;
+    }).join('');
+}
+
+// ── Played before filter ──────────────────────────────────────
+async function renderPlayedList() {
+  const el = document.getElementById('played-list');
+  el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">Loading session history...</div>';
+  const {data:sessions} = await db.from('sessions').select('id').eq('facility_id',FACILITY_ID);
+  if (!sessions||!sessions.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No session history yet.</div>'; return; }
+  const ids = sessions.map(s=>s.id);
+  const {data:invites} = await db.from('invites').select('invited_member_id').in('session_id',ids).eq('status','accepted');
+  if (!invites||!invites.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No one has joined your sessions yet.</div>'; return; }
+  const playedIds = [...new Set(invites.map(i=>i.invited_member_id))];
+  const played = members.filter(m=>playedIds.includes(m.id));
+  if (!played.length) { el.innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#555;">No previous playing partners found.</div>'; return; }
+  el.innerHTML = `<div style="font-size:12px;color:#555;margin-bottom:14px;">${played.length} previous partner${played.length>1?'s':''} — all will be invited</div>`
+    + played.map(m=>`<div class="member-row no-cursor"><div class="avatar selected">${initials(m.name)}</div><div class="member-info"><div class="member-name">${m.name}</div><div class="member-hcp">${m.handicap!=null?'Handicap: '+m.handicap:'Member'}</div></div><div style="font-size:11px;color:#D4A800;">Played before ✓</div></div>`).join('');
+}
+
+// ── Filter switching ──────────────────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  ['specific','anyone','circle','handicap','played'].forEach(k=>{
+    document.getElementById('chip-'+k).className='chip'+(k===f?' active':'');
+    document.getElementById('mode-'+k).style.display=k===f?'block':'none';
+  });
+  if (f==='circle') renderCircleList();
+  if (f==='handicap') renderHandicapList();
+  if (f==='played') renderPlayedList();
+  updateBtn();
+}
+
+// ── Toggle open ───────────────────────────────────────────────
+function toggleOpen() {
+  if (submitted) return;
+  isOpen = !isOpen;
+  document.getElementById('sw').className='switch'+(isOpen?' on':'');
+  document.getElementById('toggle-sub').textContent=isOpen?'Open — selected members will be notified':'Solo session — only you';
+  document.getElementById('open-section').style.display=isOpen?'block':'none';
+  updateBtn();
+}
+
+// ── Guest ─────────────────────────────────────────────────────
+function addGuest() {
+  const inp = document.getElementById('guest-email-input');
+  const email = inp.value.trim();
+  if (!email||!email.includes('@')) { alert('Please enter a valid email'); return; }
+  if (guestEmails.includes(email)) { alert('Already added'); return; }
+  guestEmails.push(email); inp.value='';
+  renderGuestList(); updateBtn();
+}
+
+document.getElementById('guest-email-input').addEventListener('keypress',e=>{ if(e.key==='Enter') addGuest(); });
+
+function removeGuest(email) { guestEmails=guestEmails.filter(e=>e!==email); renderGuestList(); updateBtn(); }
+
+function renderGuestList() {
+  document.getElementById('guest-list').innerHTML = guestEmails.map(e=>`
+    <div class="guest-tag"><span>✉️</span><span class="guest-tag-email">${e}</span><button class="guest-tag-remove" onclick="removeGuest('${e}')">×</button></div>`).join('');
+}
+
+// ── Update button ─────────────────────────────────────────────
+function updateBtn() {
+  const btn = document.getElementById('main-btn');
+  if (!isOpen) { btn.textContent='Confirm booking'; return; }
+  const g = guestEmails.length;
+  const gs = g>0?' + '+g+' guest'+(g>1?'s':''):'';
+  if (currentFilter==='anyone') { btn.textContent='Open session to all members'+gs; return; }
+  if (currentFilter==='circle') {
+    const n=[...circleIds].length;
+    btn.textContent = n===0?'Send invites':'Invite my circle ('+n+' player'+(n>1?'s':')')+gs; return;
+  }
+  if (currentFilter==='handicap') {
+    const n=members.filter(m=>m.handicap!=null&&Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE).length;
+    btn.textContent = n===0?'No matched players':'Invite '+n+' matched player'+(n>1?'s':'')+gs; return;
+  }
+  if (currentFilter==='played') { btn.textContent='Invite previous playing partners'+gs; return; }
+  const n=Object.values(selected).filter(Boolean).length;
+  btn.textContent = (n+g)===0?'Send invites':'Send invites to '+(n+g)+' player'+((n+g)>1?'s':'');
+}
+
+// ── Send invites ──────────────────────────────────────────────
+async function sendMemberInvites(sessionId, invitedMembers, dateLabel) {
+  if (!invitedMembers.length) return;
+  const rows = invitedMembers.map(m=>({session_id:sessionId,invited_member_id:m.id,status:'pending'}));
+  const {data:inviteData,error} = await db.from('invites').insert(rows).select();
+  if (error||!inviteData) return;
+  for (let i=0;i<invitedMembers.length;i++) {
+    const m=invitedMembers[i], inv=inviteData[i];
+    document.getElementById('sending-text').textContent='Sending to '+m.name+'...';
+    try {
+      await fetch('/api/send-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        inviteId:inv.id,memberName:m.name,memberEmail:m.email,hostName:HOST_NAME,bayName:BAY_NAME,
+        sessionDate:dateLabel,
+        startTime: SESSION_DATE_PARAM ? fmtTime(SESSION_DATE_PARAM) : '4:00 PM',
+        endTime: SESSION_DATE_PARAM ? fmtTime(new Date(new Date(SESSION_DATE_PARAM).getTime()+90*60*1000).toISOString()) : '5:30 PM',
+        facilityName:FACILITY_NAME
+      })});
+    } catch(e) { console.error(e); }
+  }
+}
+
+async function sendGuestInvites(sessionId, dateLabel) {
+  for (const email of guestEmails) {
+    document.getElementById('sending-text').textContent='Sending guest invite to '+email+'...';
+    const {data:gd} = await db.from('guests').insert({session_id:sessionId,email,invited_by:HOST_NAME,facility_id:FACILITY_ID,status:'pending'}).select().single();
+    if (gd) {
+      try {
+        await fetch('/api/send-guest-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+          guestEmail:email,hostName:HOST_NAME,bayName:BAY_NAME,sessionDate:dateLabel,
+          startTime: SESSION_DATE_PARAM ? fmtTime(SESSION_DATE_PARAM) : '4:00 PM',
+          endTime: SESSION_DATE_PARAM ? fmtTime(new Date(new Date(SESSION_DATE_PARAM).getTime()+90*60*1000).toISOString()) : '5:30 PM',
+          facilityName:FACILITY_NAME,
+          acceptUrl:'https://baybuddy.vercel.app/guest.html?guest='+gd.id
+        })});
+      } catch(e) { console.error(e); }
+    }
+  }
+}
+
+async function handleSubmit() {
+  if (submitted) return;
+  submitted=true;
+  const btn=document.getElementById('main-btn');
+  btn.disabled=true;
+
+  const sessionDateStr = SESSION_DATE_PARAM ? new Date(SESSION_DATE_PARAM).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+  const startTimeStr = SESSION_DATE_PARAM ? new Date(SESSION_DATE_PARAM).toTimeString().substring(0,8) : '16:00:00';
+  const endTimeStr = SESSION_DATE_PARAM ? new Date(new Date(SESSION_DATE_PARAM).getTime()+90*60*1000).toTimeString().substring(0,8) : '17:30:00';
+  const now = new Date(SESSION_DATE_PARAM || new Date());
+  const dateLabel = DAYS[now.getDay()]+', '+MONTHS[now.getMonth()]+' '+now.getDate();
+
+  const {data:sess,error:sessErr} = await db.from('sessions').insert({
+    facility_id:FACILITY_ID,
+    host_member_id:null,
+    bay_name:BAY_NAME,
+    session_date:sessionDateStr,
+    start_time:startTimeStr,
+    end_time:endTimeStr,
+    is_open:isOpen
+  }).select().single();
+
+  if (sessErr) { showError('Session save failed: '+sessErr.message); submitted=false; btn.disabled=false; return; }
+
+  if (!isOpen) { showConfirm('Booking confirmed. See you at '+BAY_NAME+'!'); btn.textContent='Booked ✓'; return; }
+
+  document.getElementById('sending-bar').style.display='flex';
+
+  let invited=[];
+  if (currentFilter==='anyone') {
+    invited=members;
+  } else if (currentFilter==='circle') {
+    invited=members.filter(m=>circleIds.has(m.id));
+  } else if (currentFilter==='handicap') {
+    invited=members.filter(m=>m.handicap!=null&&Math.abs(m.handicap-HOST_HANDICAP)<=HANDICAP_RANGE);
+  } else if (currentFilter==='played') {
+    const {data:sessions2} = await db.from('sessions').select('id').eq('facility_id',FACILITY_ID);
+    if (sessions2&&sessions2.length) {
+      const sids=sessions2.map(s=>s.id);
+      const {data:pinv} = await db.from('invites').select('invited_member_id').in('session_id',sids).eq('status','accepted');
+      if (pinv) { const pids=[...new Set(pinv.map(i=>i.invited_member_id))]; invited=members.filter(m=>pids.includes(m.id)); }
+    }
+  } else {
+    invited=members.filter(m=>selected[m.id]);
+  }
+
+  await sendMemberInvites(sess.id, invited, dateLabel);
+  await sendGuestInvites(sess.id, dateLabel);
+
+  document.getElementById('sending-bar').style.display='none';
+
+  const msgs = {
+    anyone: 'Session is open to all '+invited.length+' members! First 3 to accept get in.',
+    circle: 'Your circle of '+invited.length+' has been invited!',
+    handicap: 'Invites sent to '+invited.length+' players within ±5 strokes!',
+    played: 'Invites sent to '+invited.length+' previous playing partner'+(invited.length>1?'s':'')+'!',
+  };
+  const names = invited.map(m=>m.name).join(', ');
+  const gNote = guestEmails.length>0?' + '+guestEmails.length+' guest'+(guestEmails.length>1?'s':''):'';
+  showConfirm(msgs[currentFilter] || 'Session is open! Invites sent to '+names+gNote+'.');
+  btn.textContent='Invites sent ✓';
+}
+
+function showConfirm(msg) { document.getElementById('confirm-text').textContent=msg; document.getElementById('confirm').style.display='flex'; }
+function showError(msg) { document.getElementById('error-msg').textContent=msg; document.getElementById('error-msg').style.display='block'; submitted=false; document.getElementById('main-btn').disabled=false; document.getElementById('sending-bar').style.display='none'; }
+
+loadMembers();
+</script>
+</body>
+</html>
