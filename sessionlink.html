@@ -264,6 +264,24 @@ function fmtTime(isoStr) {
 function initials(name) { return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 
 async function loadMembers() {
+  try {
+    const wixRes = await fetch('https://www.newyorkgolfandfitness.com/_functions/members');
+    const wixData = await wixRes.json();
+    const memberList = Array.isArray(wixData) ? wixData : (wixData.members || wixData.items || []);
+    if (memberList.length) {
+      members = memberList.map(m => ({
+        id: m.id || m._id || m.wix_id,
+        name: m.name || m.fullName || ((m.firstName||'') + ' ' + (m.lastName||'')).trim(),
+        email: m.email || m.loginEmail || '',
+        handicap: m.handicap != null ? parseInt(m.handicap) : null
+      })).filter(m => m.name !== HOST_NAME);
+      const saved = localStorage.getItem('bb_circle_'+FACILITY_ID);
+      if (saved) circleIds = new Set(JSON.parse(saved));
+      renderMemberList();
+      return;
+    }
+  } catch(e) { console.log('Wix fetch failed, falling back to Supabase', e.message); }
+  // Fallback to Supabase
   const {data,error} = await db.from('members').select('*').eq('facility_id',FACILITY_ID).neq('name',HOST_NAME);
   if (error) { document.getElementById('member-list').innerHTML='<div style="text-align:center;padding:20px;font-size:13px;color:#f87171;">Failed to load</div>'; return; }
   members = data;
