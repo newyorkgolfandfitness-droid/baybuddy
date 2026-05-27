@@ -233,22 +233,30 @@ document.getElementById('member-display').textContent = HOST_NAME;
 document.getElementById('bay-display').textContent = BAY_NAME || '—';
 document.getElementById('hcp-display').textContent = HOST_HANDICAP;
 
+function parseISOLocal(isoStr) {
+  const match = isoStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!match) return null;
+  return { year: parseInt(match[1]), month: parseInt(match[2])-1, day: parseInt(match[3]), hours: parseInt(match[4]), minutes: parseInt(match[5]) };
+}
+function formatTime(p) {
+  const h = p.hours, m = String(p.minutes).padStart(2,"0");
+  return (h%12||12)+":"+m+" "+(h>=12?"PM":"AM");
+}
 if (SESSION_DATE_PARAM) {
-  const st = new Date(SESSION_DATE_PARAM);
-  document.getElementById('session-date').textContent = MONTHS[st.getMonth()] + ' ' + st.getDate() + ', ' + st.getFullYear();
-  const shr = st.getHours(), smn = String(st.getMinutes()).padStart(2, '0');
-  const startStr = (shr % 12 || 12) + ':' + smn + ' ' + (shr >= 12 ? 'PM' : 'AM');
-  let endStr;
-  if (SESSION_ENDDATE_PARAM) {
-    const et = new Date(SESSION_ENDDATE_PARAM);
-    const ehr = et.getHours(), emn = String(et.getMinutes()).padStart(2, '0');
-    endStr = (ehr % 12 || 12) + ':' + emn + ' ' + (ehr >= 12 ? 'PM' : 'AM');
-  } else {
-    const et = new Date(st.getTime() + 90 * 60 * 1000);
-    const ehr = et.getHours(), emn = String(et.getMinutes()).padStart(2, '0');
-    endStr = (ehr % 12 || 12) + ':' + emn + ' ' + (ehr >= 12 ? 'PM' : 'AM');
+  const st = parseISOLocal(SESSION_DATE_PARAM);
+  if (st) {
+    document.getElementById("session-date").textContent = MONTHS[st.month]+" "+st.day+", "+st.year;
+    const startStr = formatTime(st);
+    let endStr;
+    if (SESSION_ENDDATE_PARAM) {
+      const et = parseISOLocal(SESSION_ENDDATE_PARAM);
+      endStr = et ? formatTime(et) : "";
+    } else {
+      const m2 = st.hours*60+st.minutes+90;
+      endStr = formatTime({hours:Math.floor(m2/60)%24, minutes:m2%60});
+    }
+    document.getElementById("session-time").textContent = startStr+" u2013 "+endStr;
   }
-  document.getElementById('session-time').textContent = startStr + ' – ' + endStr;
 } else {
   const now = new Date();
   document.getElementById('session-date').textContent = MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
