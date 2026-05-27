@@ -255,7 +255,7 @@ if (SESSION_DATE_PARAM) {
       const m2 = st.hours*60+st.minutes+90;
       endStr = formatTime({hours:Math.floor(m2/60)%24, minutes:m2%60});
     }
-    document.getElementById("session-time").textContent = startStr+" u2013 "+endStr;
+    document.getElementById("session-time").textContent = startStr+" – "+endStr;
   }
 } else {
   const now = new Date();
