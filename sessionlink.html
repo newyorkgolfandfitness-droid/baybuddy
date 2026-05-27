@@ -234,9 +234,9 @@ document.getElementById('bay-display').textContent = BAY_NAME || '—';
 document.getElementById('hcp-display').textContent = HOST_HANDICAP;
 
 function parseISOLocal(isoStr) {
-  const match = isoStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-  if (!match) return null;
-  return { year: parseInt(match[1]), month: parseInt(match[2])-1, day: parseInt(match[3]), hours: parseInt(match[4]), minutes: parseInt(match[5]) };
+  const d = new Date(isoStr);
+  const eastern = new Date(d.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  return { year: eastern.getFullYear(), month: eastern.getMonth(), day: eastern.getDate(), hours: eastern.getHours(), minutes: eastern.getMinutes() };
 }
 function formatTime(p) {
   const h = p.hours, m = String(p.minutes).padStart(2,"0");
