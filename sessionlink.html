@@ -499,7 +499,8 @@ async function handleSubmit() {
     session_date:sessionDateStr,
     start_time:startTimeStr,
     end_time:endTimeStr,
-    is_open:isOpen
+    is_open:isOpen,
+    host_name:HOST_NAME
   }).select().single();
 
   if (sessErr) { showError('Session save failed: '+sessErr.message); submitted=false; btn.disabled=false; return; }
